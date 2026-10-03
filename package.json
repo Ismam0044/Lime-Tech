@@ -1,0 +1,12 @@
+{
+  "name": "lime-tech-workspace",
+  "private": true,
+  "workspaces": [
+    "Portfolio web"
+  ],
+  "scripts": {
+    "dev": "npm --workspace=\"Portfolio web\" run dev",
+    "build": "npm --workspace=\"Portfolio web\" run build",
+    "preview": "npm --workspace=\"Portfolio web\" run preview"
+  }
+}
