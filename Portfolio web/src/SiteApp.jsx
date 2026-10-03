@@ -1,5 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ArrowDownRight, ArrowRight, ArrowUpRight, Bot, Check, ChevronRight, Cloud, Globe2, Layers3, Menu, MessageCircle, MonitorSmartphone, Network, Server, Sparkles, Users, X, Zap } from 'lucide-react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const navItems = [
   { label: 'Home', href: '/' },
@@ -62,9 +66,65 @@ function ContactPage() {
 const routes = { '/': { title: 'Home', component: HomePage }, '/services': { title: 'Services', component: ServicesPage }, '/limeos': { title: 'LimeOS', component: LimeOSPage }, '/about': { title: 'About', component: AboutPage }, '/contact': { title: 'Contact', component: ContactPage } };
 
 export default function SiteApp() {
+  const pageRef = useRef(null);
   const path = window.location.pathname.replace(/\/$/, '') || '/';
   const route = routes[path] || { title: 'Page not found', component: () => <PageIntro kicker="404 / NOT FOUND" title="This page" accent="took a detour." body="Let’s get you back to where you need to be."><a className="button button-lime" href="/">Back to home <ArrowRight size={16}/></a></PageIntro> };
   const Page = route.component;
   useEffect(() => { document.title = route.title === 'Home' ? 'Lime Tech — Build what’s next' : route.title + ' — Lime Tech'; }, [route.title]);
-  return <><Header/><main><Page/></main><Footer/></>;
+  useLayoutEffect(() => {
+    const media = gsap.matchMedia();
+    media.add('(prefers-reduced-motion: no-preference)', () => {
+      const ctx = gsap.context(() => {
+        const cleanups = [];
+        gsap.from('.nav-shell', { y: -14, autoAlpha: 0, duration: 0.65, ease: 'power3.out' });
+        if (document.querySelector('.hero')) {
+          const intro = gsap.timeline({ defaults: { ease: 'power3.out' } });
+          intro
+            .from('.hero-copy .eyebrow', { y: 18, autoAlpha: 0, duration: 0.6 })
+            .from('.hero h1', { y: 42, autoAlpha: 0, duration: 0.85 }, '-=0.3')
+            .from('.hero-intro', { y: 22, autoAlpha: 0, duration: 0.65 }, '-=0.4')
+            .from('.hero-actions > *', { y: 16, autoAlpha: 0, duration: 0.5, stagger: 0.1 }, '-=0.32')
+            .from('.dash-card', { y: 38, rotate: -2.5, scale: 0.97, autoAlpha: 0, duration: 0.9 }, '-=0.85')
+            .from('.float-note', { y: 16, scale: 0.92, autoAlpha: 0, duration: 0.55, stagger: 0.12 }, '-=0.48');
+          gsap.to('.float-note', { y: -7, duration: 2.6, stagger: 0.25, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 1.2 });
+        } else {
+          gsap.from('.page-intro-copy > *, .contact-page-copy > *', {
+            y: 24, autoAlpha: 0, duration: 0.65, stagger: 0.1, ease: 'power3.out', clearProps: 'all'
+          });
+          gsap.from('.page-intro-index, .contact-form', {
+            y: 28, autoAlpha: 0, duration: 0.8, delay: 0.2, ease: 'power3.out', clearProps: 'all'
+          });
+        }
+
+        gsap.utils.toArray('.service-grid, .service-detail-grid, .capability-grid, .value-grid, .steps').forEach((grid) => {
+          gsap.from(grid.children, {
+            y: 28, autoAlpha: 0, duration: 0.7, stagger: 0.09, ease: 'power3.out',
+            scrollTrigger: { trigger: grid, start: 'top 82%', once: true }, clearProps: 'all'
+          });
+        });
+
+        gsap.utils.toArray('.section-heading, .platform-layout, .hosting-detail, .about-statement > div, .approach-main, .home-next > *, .cta-band > *, .contact-bottom > *').forEach((item) => {
+          gsap.from(item, {
+            y: 30, autoAlpha: 0, duration: 0.75, ease: 'power3.out',
+            scrollTrigger: { trigger: item, start: 'top 86%', once: true }, clearProps: 'all'
+          });
+        });
+
+        gsap.utils.toArray('.service-card, .service-detail, .capability-grid article, .value-grid article, .home-next-card').forEach((card) => {
+          const lift = () => gsap.to(card, { y: -5, duration: 0.22, ease: 'power2.out' });
+          const settle = () => gsap.to(card, { y: 0, duration: 0.3, ease: 'power2.out' });
+          card.addEventListener('pointerenter', lift);
+          card.addEventListener('pointerleave', settle);
+          cleanups.push(() => {
+            card.removeEventListener('pointerenter', lift);
+            card.removeEventListener('pointerleave', settle);
+          });
+        });
+        return () => cleanups.forEach((cleanup) => cleanup());
+      }, pageRef);
+      return () => ctx.revert();
+    });
+    return () => media.revert();
+  }, [path]);
+  return <><Header/><main ref={pageRef}><Page/></main><Footer/></>;
 }
