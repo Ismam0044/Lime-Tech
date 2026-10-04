@@ -2,10 +2,13 @@ import React, { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } f
 import { ArrowDownRight, ArrowRight, ArrowUpRight, Bot, Check, ChevronRight, Cloud, Globe2, Layers3, Menu, MessageCircle, MonitorSmartphone, Network, Server, Sparkles, Users, X, Zap } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { SplitText } from 'gsap/SplitText';
+import Lenis from 'lenis';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from './components/ui/dialog.jsx';
 
 const ThreeCore = lazy(() => import('./ThreeCore.jsx'));
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, SplitText);
 
 const navItems = [
   { label: 'Home', href: '/' },
@@ -29,7 +32,7 @@ function Dashboard() {
 function Header() {
   const [open, setOpen] = useState(false);
   const path = window.location.pathname.replace(/\/$/, '') || '/';
-  return <header className="nav-shell fixed top-0 inset-x-0 z-50 bg-[#101d1b]/90 backdrop-blur-xl shadow-lg shadow-black/10"><a href="/" className="brand" onClick={() => setOpen(false)}><img src="/lime-logo.png" alt="Lime Tech"/><span className="brand-tag">DIGITAL, GROWN WELL.</span></a><button className="mobile-toggle" onClick={() => setOpen(!open)} aria-label={open ? 'Close navigation' : 'Open navigation'}>{open ? <X/> : <Menu/>}</button><nav className={open ? 'nav-links open' : 'nav-links'} aria-label="Main navigation">{navItems.map(item => <a key={item.href} href={item.href} className={path === item.href ? 'nav-current' : ''} aria-current={path === item.href ? 'page' : undefined} onClick={() => setOpen(false)}>{item.label}</a>)}<a className="nav-cta" href="/contact" onClick={() => setOpen(false)}>Let’s talk <ArrowUpRight size={15}/></a></nav></header>;
+  return <header className="nav-shell fixed top-0 inset-x-0 z-50 bg-[#101d1b]/90 backdrop-blur-xl shadow-lg shadow-black/10"><a href="/" className="brand"><img src="/lime-logo.png" alt="Lime Tech"/><span className="brand-tag">DIGITAL, GROWN WELL.</span></a><nav className="nav-links" aria-label="Main navigation">{navItems.map(item => <a key={item.href} href={item.href} className={path === item.href ? 'nav-current' : ''} aria-current={path === item.href ? 'page' : undefined}>{item.label}</a>)}<a className="nav-cta" href="/contact">Let’s talk <ArrowUpRight size={15}/></a></nav><Dialog open={open} onOpenChange={setOpen}><DialogTrigger asChild><button className="mobile-toggle" aria-label={open ? 'Close navigation' : 'Open navigation'}>{open ? <X/> : <Menu/>}</button></DialogTrigger><DialogContent className="mobile-nav-panel" aria-describedby={undefined}><DialogTitle className="sr-only">Lime Tech navigation</DialogTitle><DialogDescription className="sr-only">Choose a page to explore.</DialogDescription><div className="mobile-nav-top"><span>LT / EXPLORE</span><DialogClose asChild><button className="mobile-nav-close" aria-label="Close navigation"><X size={18}/></button></DialogClose></div><nav className="mobile-nav-links" aria-label="Mobile navigation">{[...navItems, { label: 'Contact', href: '/contact' }].map((item, index) => <DialogClose asChild key={item.href}><a href={item.href} className={path === item.href ? 'mobile-nav-link nav-current' : 'mobile-nav-link'} aria-current={path === item.href ? 'page' : undefined}><span><small>0{index + 1}</small>{item.label}</span><ArrowUpRight size={18}/></a></DialogClose>)}</nav><div className="mobile-nav-bottom"><span>BUILT WITH PURPOSE IN BANGLADESH</span><a href="mailto:lime.tech.contact@gmail.com">LET’S TALK <ArrowUpRight size={15}/></a></div></DialogContent></Dialog></header>;
 }
 
 function Footer() {
@@ -97,6 +100,19 @@ export default function SiteApp() {
   const route = routes[path] || { title: 'Page not found', component: () => <PageIntro kicker="404 / NOT FOUND" title="This page" accent="took a detour." body="Let’s get you back to where you need to be."><a className="button button-lime" href="/">Back to home <ArrowRight size={16}/></a></PageIntro> };
   const Page = route.component;
   useEffect(() => { document.title = route.title === 'Home' ? 'Lime Tech — Build what’s next' : route.title + ' — Lime Tech'; }, [route.title]);
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+    const lenis = new Lenis({ autoRaf: false, anchors: true, lerp: 0.09, smoothWheel: true });
+    lenis.on('scroll', ScrollTrigger.update);
+    const update = (time) => lenis.raf(time * 1000);
+    gsap.ticker.add(update);
+    gsap.ticker.lagSmoothing(0);
+    return () => {
+      gsap.ticker.remove(update);
+      gsap.ticker.lagSmoothing(500, 33);
+      lenis.destroy();
+    };
+  }, []);
   useLayoutEffect(() => {
     const media = gsap.matchMedia();
     media.add('(prefers-reduced-motion: no-preference)', () => {
@@ -107,14 +123,27 @@ export default function SiteApp() {
           const intro = gsap.timeline({ defaults: { ease: 'power3.out' } });
           intro
             .from('.hero-copy .eyebrow', { y: 18, autoAlpha: 0, duration: 0.6 })
-            .from('.hero h1', { y: 42, autoAlpha: 0, duration: 0.85 }, '-=0.3')
             .from('.hero-intro', { y: 22, autoAlpha: 0, duration: 0.65 }, '-=0.4')
             .from('.hero-actions > *', { y: 16, autoAlpha: 0, duration: 0.5, stagger: 0.1 }, '-=0.32')
             .from('.dash-card', { y: 38, rotate: -2.5, scale: 0.97, autoAlpha: 0, duration: 0.9 }, '-=0.85')
             .from('.float-note', { y: 16, scale: 0.92, autoAlpha: 0, duration: 0.55, stagger: 0.12 }, '-=0.48');
           gsap.to('.float-note', { y: -7, duration: 2.6, stagger: 0.25, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 1.2 });
-        } else {
-          gsap.from('.page-intro-copy > *, .contact-page-copy > *', {
+        }
+
+        const headline = scope.querySelector('.hero h1, .page-intro h1, .contact-page h1');
+        if (headline) {
+          SplitText.create(headline, {
+            type: 'lines',
+            mask: 'lines',
+            autoSplit: true,
+            onSplit: (split) => gsap.from(split.lines, {
+              yPercent: 112, autoAlpha: 0, duration: 0.86, stagger: 0.12, delay: 0.16, ease: 'power3.out'
+            }),
+          });
+        }
+
+        if (!document.querySelector('.hero')) {
+          gsap.from('.page-intro-copy > :not(h1), .contact-page-copy > :not(h1)', {
             y: 24, autoAlpha: 0, duration: 0.65, stagger: 0.1, ease: 'power3.out', clearProps: 'all'
           });
           gsap.from('.page-intro-index, .contact-form', {
