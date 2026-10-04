@@ -1,7 +1,9 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ArrowDownRight, ArrowRight, ArrowUpRight, Bot, Check, ChevronRight, Cloud, Globe2, Layers3, Menu, MessageCircle, MonitorSmartphone, Network, Server, Sparkles, Users, X, Zap } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+const ThreeCore = lazy(() => import('./ThreeCore.jsx'));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -42,7 +44,31 @@ function HomePage() {
   return <><section className="hero section-pad"><div className="hero-grid"/><div className="hero-copy"><Eyebrow>TECHNOLOGY FOR WHAT’S NEXT</Eyebrow><h1>Make your<br/>next move <span className="lime-word">count<span className="period">.</span></span></h1><p className="hero-intro">We build the digital foundations that help ambitious businesses move forward—from their first website to the systems that run the whole show.</p><div className="hero-actions"><a href="/contact" className="button button-lime">Tell us what you’re building <ArrowUpRight size={17}/></a><a href="/services" className="text-link">Explore our services <ArrowDownRight size={16}/></a></div><div className="hero-note"><span className="note-rule"/> BIG IDEAS. THOUGHTFUL BUILDING. REAL-WORLD RESULTS.</div></div><Dashboard/><div className="hero-index"><span>01</span><i/> DIGITAL PARTNER FOR GROWING TEAMS</div></section><section className="ticker"><div className="ticker-track">{['WEB EXPERIENCES','CONNECTED OPERATIONS','HUMAN-CENTRED HR','PRACTICAL AI','BETTER BUSINESS DATA','WEB EXPERIENCES','CONNECTED OPERATIONS'].map((x,i)=><span key={i}>{x}<b>✳</b></span>)}</div></section><section className="services section-pad"><div className="section-heading"><div><Eyebrow dark>WHAT WE MAKE POSSIBLE</Eyebrow><h2>One partner.<br/><span className="muted-heading">Room to grow.</span></h2></div><p>From a first impression online to a clearer picture of the whole business, we help the pieces work together.</p></div><div className="service-grid">{services.slice(0,4).map(({n,icon:Icon,title,text})=><article className="service-card" key={n}><div className="service-top"><span>{n} / 05</span><Icon size={22} strokeWidth={1.5}/></div><h3>{title}</h3><p>{text}</p><a href="/services" aria-label={'Explore ' + title}><ArrowUpRight size={19}/></a></article>)}</div><div className="service-foot"><span>DESIGNED AROUND THE WAY YOUR BUSINESS WORKS.</span><a href="/services">See all services <ArrowRight size={15}/></a></div></section><section className="platform section-pad"><div className="platform-top"><Eyebrow>ONE CONNECTED BUSINESS HQ</Eyebrow><div className="platform-stamp"><span>YOUR BUSINESS.<br/>IN SYNC.</span><Layers3 size={28}/></div></div><div className="platform-layout"><div className="platform-copy"><div className="product-name"><span className="product-symbol">✳</span> Lime<span>OS</span></div><h2>Every moving part.<br/><span>Moving together.</span></h2><p>ERP, HRM, helpful AI, forecasting and mobile access—connected in a system that can run in your cloud or on your own servers.</p><div className="platform-points"><div><span className="check-mark"><Check size={13}/></span> One connected ERP + HRM</div><div><span className="check-mark"><Check size={13}/></span> Built-in AI chat</div><div><span className="check-mark"><Check size={13}/></span> Forecasting reports</div><div><span className="check-mark"><Check size={13}/></span> Mobile companion app</div></div><a href="/limeos" className="button button-outline">Explore LimeOS <ArrowUpRight size={16}/></a></div><SystemDiagram/></div></section><section className="home-next section-pad"><div className="home-next-copy"><Eyebrow dark>THE NEXT STEP, MADE CLEARER</Eyebrow><h2>Less guesswork.<br/><span>More next steps.</span></h2><p>We help teams make good technology decisions and build with a clear path from first idea to everyday use.</p><a href="/about" className="text-link dark-link">How we work <ArrowRight size={16}/></a></div><div className="home-next-card"><div className="next-card-icon"><MessageCircle size={22}/></div><span>NO COOKIE-CUTTER PLANS</span><h3>Start with your actual business.</h3><p>Get a partner who asks the right questions, then makes the right-sized solution with you.</p><a href="/about">Meet our approach <ArrowUpRight size={17}/></a></div></section><CTA/></>;
 }
 
-function SystemDiagram() { return <div className="platform-visual"><div className="platform-ring ring-1"/><div className="platform-ring ring-2"/><div className="platform-center"><span className="platform-spark">✳</span><strong>One business.<br/>A clearer picture.</strong><small>CONNECTED BY LIMEOS</small></div><div className="node node-erp"><Layers3/><span>ERP</span></div><div className="node node-hr"><Users/><span>HRM</span></div><div className="node node-ai"><Bot/><span>AI + INSIGHTS</span></div><div className="node node-mobile"><MonitorSmartphone/><span>MOBILE</span></div><div className="connect-line line-1"/><div className="connect-line line-2"/><div className="connect-line line-3"/><div className="connect-line line-4"/></div>; }
+function DeferredThreeCore() {
+  const hostRef = useRef(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const host = hostRef.current;
+    if (!host) return undefined;
+    if (!('IntersectionObserver' in window)) {
+      setVisible(true);
+      return undefined;
+    }
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setVisible(true);
+        observer.disconnect();
+      }
+    }, { rootMargin: '140px' });
+    observer.observe(host);
+    return () => observer.disconnect();
+  }, []);
+
+  return <div className="three-core-frame" ref={hostRef} aria-hidden="true">{visible && <Suspense fallback={<div className="three-core"/>}><ThreeCore/></Suspense>}</div>;
+}
+
+function SystemDiagram() { return <div className="platform-visual"><div className="platform-ring ring-1"/><div className="platform-ring ring-2"/><DeferredThreeCore/><div className="platform-center"><span className="platform-spark">✳</span><strong>One business.<br/>A clearer picture.</strong><small>CONNECTED BY LIMEOS</small></div><div className="node node-erp"><Layers3/><span>ERP</span></div><div className="node node-hr"><Users/><span>HRM</span></div><div className="node node-ai"><Bot/><span>AI + INSIGHTS</span></div><div className="node node-mobile"><MonitorSmartphone/><span>MOBILE</span></div><div className="connect-line line-1"/><div className="connect-line line-2"/><div className="connect-line line-3"/><div className="connect-line line-4"/></div>; }
 
 function ServicesPage() {
   return <><PageIntro kicker="SERVICES / BUILT AROUND YOU" title="Technology that" accent="earns its place." body="Need a sharper website, a more connected operation, or an AI assistant that handles real work? We’ll shape the right solution around your goals."><a href="/contact" className="button button-lime">Tell us what you need <ArrowUpRight size={16}/></a></PageIntro><section className="service-details section-pad"><div className="service-details-head"><Eyebrow dark>WHAT WE CAN BUILD TOGETHER</Eyebrow><p>Start with one clear need. Add capabilities as your business grows.</p></div><div className="service-detail-grid">{services.map(({n,icon:Icon,title,detail,tags})=><article className="service-detail" key={n}><div className="service-detail-top"><span>{n}</span><Icon size={23}/></div><h2>{title}</h2><p>{detail}</p><ul>{tags.map(tag=><li key={tag}><Check size={13}/>{tag}</li>)}</ul><a href="/contact">Discuss this service <ArrowRight size={15}/></a></article>)}</div></section><section className="approach section-pad"><div className="approach-aside"><Eyebrow>MADE WITH YOU</Eyebrow><div className="approach-index">LT<br/><span>STUDIO / 01</span></div></div><div className="approach-main"><h2>The right-sized<br/><span>way forward.</span></h2><div className="approach-bottom"><p>No mystery process. No technology for technology’s sake. Just a curious team, a clear plan and work made to earn its place in your business.</p><div className="steps"><div><b>01</b><span>Listen<br/><small>Start with the real problem.</small></span></div><div><b>02</b><span>Shape<br/><small>Map the right-sized solution.</small></span></div><div><b>03</b><span>Make<br/><small>Build, launch and improve.</small></span></div></div></div></div></section><CTA title="Not sure where to start?"/></>;
