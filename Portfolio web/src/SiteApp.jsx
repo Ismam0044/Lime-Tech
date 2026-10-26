@@ -71,7 +71,7 @@ function DeferredThreeCore() {
   return <div className="three-core-frame" ref={hostRef} aria-hidden="true">{visible && <Suspense fallback={<div className="three-core"/>}><ThreeCore/></Suspense>}</div>;
 }
 
-function SystemDiagram() { return <div className="platform-visual"><div className="platform-ring ring-1"/><div className="platform-ring ring-2"/><DeferredThreeCore/><div className="platform-center"><span className="platform-spark">✳</span><strong>One business.<br/>A clearer picture.</strong><small>CONNECTED BY LIMEOS</small></div><div className="node node-erp"><Layers3/><span>ERP</span></div><div className="node node-hr"><Users/><span>HRM</span></div><div className="node node-ai"><Bot/><span>AI + INSIGHTS</span></div><div className="node node-mobile"><MonitorSmartphone/><span>MOBILE</span></div><div className="connect-line line-1"/><div className="connect-line line-2"/><div className="connect-line line-3"/><div className="connect-line line-4"/></div>; }
+function SystemDiagram() { return <div className="platform-visual"><div className="platform-ring ring-inner"/><div className="platform-ring ring-outer"/><DeferredThreeCore/><div className="platform-center"><span className="platform-spark">✳</span><strong>One business.<br/>A clearer picture.</strong><small>CONNECTED BY LIMEOS</small></div><div className="node node-erp"><Layers3/><span>ERP</span></div><div className="node node-hr"><Users/><span>HRM</span></div><div className="node node-ai"><Bot/><span>AI + INSIGHTS</span></div><div className="node node-mobile"><MonitorSmartphone/><span>MOBILE</span></div><div className="connect-line line-1"/><div className="connect-line line-2"/><div className="connect-line line-3"/><div className="connect-line line-4"/></div>; }
 
 function ServicesPage() {
   return <><PageIntro kicker="SERVICES / BUILT AROUND YOU" title="Technology that" accent="earns its place." body="Need a sharper website, a more connected operation, or an AI assistant that handles real work? We’ll shape the right solution around your goals."><a href="/contact" className="button button-lime">Tell us what you need <ArrowUpRight size={16}/></a></PageIntro><section className="service-details section-pad"><div className="service-details-head"><Eyebrow dark>WHAT WE CAN BUILD TOGETHER</Eyebrow><p>Start with one clear need. Add capabilities as your business grows.</p></div><div className="service-detail-grid">{services.map(({n,icon:Icon,title,detail,tags})=><article className="service-detail" key={n}><div className="service-detail-top"><span>{n}</span><Icon size={23}/></div><h2>{title}</h2><p>{detail}</p><ul>{tags.map(tag=><li key={tag}><Check size={13}/>{tag}</li>)}</ul><a href="/contact">Discuss this service <ArrowRight size={15}/></a></article>)}</div></section><section className="approach section-pad"><div className="approach-aside"><Eyebrow>MADE WITH YOU</Eyebrow><div className="approach-index">LT<br/><span>STUDIO / 01</span></div></div><div className="approach-main"><h2>The right-sized<br/><span>way forward.</span></h2><div className="approach-bottom"><p>No mystery process. No technology for technology’s sake. Just a curious team, a clear plan and work made to earn its place in your business.</p><div className="steps"><div><b>01</b><span>Listen<br/><small>Start with the real problem.</small></span></div><div><b>02</b><span>Shape<br/><small>Map the right-sized solution.</small></span></div><div><b>03</b><span>Make<br/><small>Build, launch and improve.</small></span></div></div></div></div></section><CTA title="Not sure where to start?"/></>;
@@ -86,10 +86,38 @@ function AboutPage() {
   return <><PageIntro kicker="ABOUT LIME TECH / OUR APPROACH" title="Good technology" accent="starts with people." body="We help companies and teams turn ambitious ideas into useful digital tools. The best solution is the one that makes real work simpler."><a href="/services" className="button button-lime">What we do <ArrowUpRight size={16}/></a></PageIntro><section className="about-statement section-pad"><div className="about-mark">✳</div><div><Eyebrow dark>OUR POINT OF VIEW</Eyebrow><h2>Make it useful.<br/><span>Make it last.</span></h2><p>Every project starts with listening. We learn how people work today, where friction is building and what better could look like. Then we combine thoughtful design, reliable engineering and the right technology to make that better future tangible.</p></div></section><section className="values section-pad"><Eyebrow dark>HOW WE THINK</Eyebrow><div className="value-grid"><article><span>01</span><h3>Clarity over complexity</h3><p>Choose the simplest system that genuinely solves the problem.</p></article><article><span>02</span><h3>People are the point</h3><p>Build around the people who will use, manage and rely on the work.</p></article><article><span>03</span><h3>Room to evolve</h3><p>Make decisions today that leave sensible options open for tomorrow.</p></article></div></section><section className="approach section-pad"><div className="approach-aside"><Eyebrow>HOW WE WORK</Eyebrow><div className="approach-index">LT<br/><span>STUDIO / 01</span></div></div><div className="approach-main"><h2>Built with you.<br/><span>Ready for real life.</span></h2><div className="approach-bottom"><p>Clear communication and steady progress from first conversation to launch and beyond.</p><div className="steps"><div><b>01</b><span>Listen<br/><small>Understand the work and the people.</small></span></div><div><b>02</b><span>Shape<br/><small>Agree on the best way forward.</small></span></div><div><b>03</b><span>Make<br/><small>Build, learn and improve together.</small></span></div></div></div></div></section><CTA/></>;
 }
 
+const CONTACT_EMAIL = 'lime.tech.contact@gmail.com';
+// FormSubmit relays the enquiry to the inbox; the first submission sends a one-time activation email to CONTACT_EMAIL.
+const CONTACT_ENDPOINT = 'https://formsubmit.co/ajax/' + CONTACT_EMAIL;
+const formMessages = {
+  idle: 'We’ll reply to the email address you share above.',
+  sending: 'Sending your message…',
+  sent: 'Thanks — your message is on its way. We’ll be in touch soon.',
+};
+
 function ContactPage() {
-  const [sent, setSent] = useState(false);
-  const submit = (e) => { e.preventDefault(); const data = new FormData(e.currentTarget); const subject = encodeURIComponent('Let’s build something — ' + data.get('name')); const body = encodeURIComponent('Hi Lime Tech,\n\n' + data.get('message') + '\n\n' + data.get('name') + '\n' + data.get('email')); window.location.href = 'mailto:lime.tech.contact@gmail.com?subject=' + subject + '&body=' + body; setSent(true); };
-  return <><section className="contact-page section-pad"><div className="contact-page-copy"><Eyebrow>CONTACT / YOUR NEXT CHAPTER</Eyebrow><h1>Let’s make<br/>something <span>useful.</span></h1><p>Share a little about what you’re trying to do. We’ll get back to you and work out a sensible next step.</p><div className="contact-email"><span>OR WRITE TO US DIRECTLY</span><a href="mailto:lime.tech.contact@gmail.com">lime.tech.contact@gmail.com <ArrowUpRight size={15}/></a></div><div className="contact-email"><span>CALL OR WHATSAPP</span><a href="tel:+8801673014744">+8801673014744 <ArrowUpRight size={15}/></a></div><div className="contact-prompt"><MessageCircle size={19}/><span>Not sure which service fits?<br/><b>That’s a fine place to start.</b></span></div></div><form className="contact-form rounded-2xl shadow-2xl shadow-black/20 ring-1 ring-white/5" onSubmit={submit}><div className="contact-form-heading"><span>PROJECT ENQUIRY</span><i>01 / 01</i></div><label>Your name<input required name="name" placeholder="What should we call you?"/></label><label>Email address<input required type="email" name="email" placeholder="you@company.com"/></label><label>What are you thinking?<textarea required name="message" rows="5" placeholder="A website, a better way to work, an ambitious idea…"/></label><button className="button button-lime rounded-lg shadow-md shadow-lime-300/10 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-lime-300/20" type="submit">{sent ? 'Email draft opened' : 'Start the conversation'}{sent ? <Check size={17}/> : <ArrowUpRight size={17}/>}</button><small className="form-note">Your email app will open with a draft. Review it, then press send.</small></form></section><section className="contact-bottom section-pad"><span>WE CAN HELP WITH</span><a href="/services">Websites <ChevronRight size={14}/></a><a href="/services">ERP + HRM <ChevronRight size={14}/></a><a href="/limeos">LimeOS <ChevronRight size={14}/></a><a href="/services">AI + mobile <ChevronRight size={14}/></a></section></>;
+  const [status, setStatus] = useState('idle');
+  const submit = async (e) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    if (data.get('_honey')) return;
+    setStatus('sending');
+    try {
+      const response = await fetch(CONTACT_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ name: data.get('name'), email: data.get('email'), message: data.get('message'), _subject: 'New enquiry from ' + data.get('name'), _template: 'table', _captcha: 'false' }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || String(result.success) === 'false') throw new Error(result.message || 'Request failed');
+      form.reset();
+      setStatus('sent');
+    } catch {
+      setStatus('error');
+    }
+  };
+  return <><section className="contact-page section-pad"><div className="contact-page-copy"><Eyebrow>CONTACT / YOUR NEXT CHAPTER</Eyebrow><h1>Let’s make<br/>something <span>useful.</span></h1><p>Share a little about what you’re trying to do. We’ll get back to you and work out a sensible next step.</p><div className="contact-email"><span>OR WRITE TO US DIRECTLY</span><a href={'mailto:' + CONTACT_EMAIL}>{CONTACT_EMAIL} <ArrowUpRight size={15}/></a></div><div className="contact-email"><span>CALL OR WHATSAPP</span><a href="tel:+8801673014744">+8801673014744 <ArrowUpRight size={15}/></a></div><div className="contact-prompt"><MessageCircle size={19}/><span>Not sure which service fits?<br/><b>That’s a fine place to start.</b></span></div></div><form className="contact-form" onSubmit={submit} onInput={() => status === 'sent' && setStatus('idle')}><div className="contact-form-heading"><span>PROJECT ENQUIRY</span><i>01 / 01</i></div><label>Your name<input required name="name" autoComplete="name" maxLength={120} placeholder="What should we call you?"/></label><label>Email address<input required type="email" name="email" autoComplete="email" maxLength={160} placeholder="you@company.com"/></label><label>What are you thinking?<textarea required name="message" rows="5" maxLength={5000} placeholder="A website, a better way to work, an ambitious idea…"/></label><input className="form-honey" type="text" name="_honey" tabIndex={-1} autoComplete="off" aria-hidden="true"/><button className="button button-lime" type="submit" disabled={status === 'sending'}>{status === 'sending' ? 'Sending…' : status === 'sent' ? 'Message sent' : 'Start the conversation'}{status === 'sent' ? <Check size={17}/> : <ArrowUpRight size={17}/>}</button><small className={'form-note' + (status === 'error' ? ' form-note-error' : status === 'sent' ? ' form-note-success' : '')} role="status" aria-live="polite">{status === 'error' ? <>We couldn’t send that just now. Please try again, or email us at <a href={'mailto:' + CONTACT_EMAIL}>{CONTACT_EMAIL}</a>.</> : formMessages[status]}</small></form></section><section className="contact-bottom section-pad"><span>WE CAN HELP WITH</span><a href="/services">Websites <ChevronRight size={14}/></a><a href="/services">ERP + HRM <ChevronRight size={14}/></a><a href="/limeos">LimeOS <ChevronRight size={14}/></a><a href="/services">AI + mobile <ChevronRight size={14}/></a></section></>;
 }
 
 const routes = { '/': { title: 'Home', component: HomePage }, '/services': { title: 'Services', component: ServicesPage }, '/limeos': { title: 'LimeOS', component: LimeOSPage }, '/about': { title: 'About', component: AboutPage }, '/contact': { title: 'Contact', component: ContactPage } };
@@ -135,6 +163,7 @@ export default function SiteApp() {
         if (headline) {
           SplitText.create(headline, {
             type: 'lines',
+            linesClass: 'split-line',
             mask: 'lines',
             autoSplit: true,
             onSplit: (split) => gsap.from(split.lines, {
@@ -155,14 +184,14 @@ export default function SiteApp() {
         gsap.utils.toArray('.service-grid, .service-detail-grid, .capability-grid, .value-grid, .steps').forEach((grid) => {
           gsap.from(grid.children, {
             y: 28, autoAlpha: 0, duration: 0.7, stagger: 0.09, ease: 'power3.out',
-            scrollTrigger: { trigger: grid, start: 'top 82%', once: true }, clearProps: 'all'
+            scrollTrigger: { trigger: grid, start: 'clamp(top 82%)', once: true }, clearProps: 'all'
           });
         });
 
         gsap.utils.toArray('.section-heading, .platform-layout, .hosting-detail, .about-statement > div, .approach-main, .home-next > *, .cta-band > *, .contact-bottom > *').forEach((item) => {
           gsap.from(item, {
             y: 30, autoAlpha: 0, duration: 0.75, ease: 'power3.out',
-            scrollTrigger: { trigger: item, start: 'top 86%', once: true }, clearProps: 'all'
+            scrollTrigger: { trigger: item, start: 'clamp(top 86%)', once: true }, clearProps: 'all'
           });
         });
 
@@ -176,6 +205,10 @@ export default function SiteApp() {
             card.removeEventListener('pointerleave', settle);
           });
         });
+        // Web fonts change the page height after the first measure; re-measure so bottom-of-page reveals can still fire.
+        let active = true;
+        document.fonts?.ready.then(() => { if (active) ScrollTrigger.refresh(); });
+        cleanups.push(() => { active = false; });
         return () => cleanups.forEach((cleanup) => cleanup());
       }, pageRef);
       return () => ctx.revert();

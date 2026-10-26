@@ -50,8 +50,6 @@ export default function ThreeCore() {
         }
       `,
       fragmentShader: `
-        #include <tonemapping_pars_fragment>
-        #include <colorspace_pars_fragment>
         uniform float uTime;
         varying vec3 vNormal;
         varying vec3 vViewPosition;
