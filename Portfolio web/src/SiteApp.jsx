@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { ArrowDownRight, ArrowRight, ArrowUpRight, Bot, Check, ChevronRight, Cloud, Globe2, Layers3, Menu, MessageCircle, MonitorSmartphone, Network, Server, Sparkles, Users, X, Zap } from 'lucide-react';
+import { AppWindow, ArrowDownRight, ArrowRight, ArrowUpRight, Bell, BookOpen, Bot, CalendarDays, ChartColumn, ChartLine, Check, ChevronDown, ChevronRight, ClipboardList, Clock, Cloud, CreditCard, Eye, FileText, Gauge, Globe2, Handshake, Headphones, Layers3, MapPin, Menu, MessageCircle, MessageSquare, MonitorSmartphone, Network, Package, PenTool, Plug, Repeat, Search, Server, ShieldCheck, ShoppingCart, Smartphone, Sparkles, Target, TrendingUp, UserCheck, UserPlus, Users, Wallet, Workflow, X, Zap } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
@@ -18,12 +18,349 @@ const navItems = [
 ];
 
 const services = [
-  { n: '01', icon: Globe2, title: 'Websites & digital products', text: 'A clear story, carefully designed and built to move people from curious to customer.', detail: 'Brand-led websites, company portals, customer experiences and practical web applications.', tags: ['Strategy & design', 'React development', 'E-commerce', 'Integrations'] },
-  { n: '02', icon: Layers3, title: 'Business ERP', text: 'A connected view of orders, inventory, finance and operations, shaped around your workflows.', detail: 'Cloud-hosted or on-premise ERP systems that bring day-to-day operations into one place.', tags: ['Finance', 'Inventory', 'Sales & CRM', 'Reporting'] },
-  { n: '03', icon: Users, title: 'HRM & people operations', text: 'Less admin for your people team, and a more considered experience for every employee.', detail: 'Practical HR systems for employee records, attendance, leave, payroll and approvals.', tags: ['Employee records', 'Attendance', 'Leave & payroll', 'Approvals'] },
-  { n: '04', icon: Bot, title: 'AI agents & chat', text: 'AI that answers useful questions, handles repeatable tasks and knows when to hand off.', detail: 'Business-aware chatbots and agents connected to your knowledge and systems.', tags: ['Customer support', 'Internal assistants', 'Workflow automation', 'Knowledge search'] },
-  { n: '05', icon: MonitorSmartphone, title: 'Mobile & field tools', text: 'Give the people away from their desks the same useful view as everyone else.', detail: 'Mobile apps and responsive experiences for ERP, HRM, field teams and customers.', tags: ['ERP companion apps', 'Field workflows', 'Employee self-service', 'Push updates'] },
+  { n: '01', icon: Globe2, href: '/services/websites', title: 'Websites & digital products', text: 'A clear story, carefully designed and built to move people from curious to customer.', detail: 'Brand-led websites, company portals, customer experiences and practical web applications.', tags: ['Strategy & design', 'React development', 'E-commerce', 'Integrations'] },
+  { n: '02', icon: Layers3, href: '/services/erp', title: 'Business ERP', text: 'A connected view of orders, inventory, finance and operations, shaped around your workflows.', detail: 'Cloud-hosted or on-premise ERP systems that bring day-to-day operations into one place.', tags: ['Finance', 'Inventory', 'Sales & CRM', 'Reporting'] },
+  { n: '03', icon: Users, href: '/services/hrm', title: 'HRM & people operations', text: 'Less admin for your people team, and a more considered experience for every employee.', detail: 'Practical HR systems for employee records, attendance, leave, payroll and approvals.', tags: ['Employee records', 'Attendance', 'Leave & payroll', 'Approvals'] },
+  { n: '04', icon: Bot, href: '/services/ai-agents', title: 'AI agents & chat', text: 'AI that answers useful questions, handles repeatable tasks and knows when to hand off.', detail: 'Business-aware chatbots and agents connected to your knowledge and systems.', tags: ['Customer support', 'Internal assistants', 'Workflow automation', 'Knowledge search'] },
+  { n: '05', icon: MonitorSmartphone, href: '/services/mobile', title: 'Mobile & field tools', text: 'Give the people away from their desks the same useful view as everyone else.', detail: 'Mobile apps and responsive experiences for ERP, HRM, field teams and customers.', tags: ['ERP companion apps', 'Field workflows', 'Employee self-service', 'Push updates'] },
+  { n: '06', icon: AppWindow, href: '/services/saas', title: 'SaaS products', text: 'Turn a good idea into a subscription product people sign up for, pay for and keep using.', detail: 'Software-as-a-service platforms built from first version to launch, ready for real customers and room to scale.', tags: ['Product design & MVP', 'Subscriptions & billing', 'Multi-tenant accounts', 'Cloud hosting & scaling'] },
 ];
+
+const tickerItems = ['WEB EXPERIENCES', 'CONNECTED OPERATIONS', 'HUMAN-CENTRED HR', 'PRACTICAL AI', 'SAAS PRODUCTS', 'BETTER BUSINESS DATA'];
+
+// Marks copy the business still has to supply. Search for <Todo> before publishing.
+function Todo({ children }) { return <div className="todo-note"><b>TO FILL IN</b>{children}</div>; }
+
+// Placeholders shared by several service pages.
+const timelineTodo = <Todo>Typical timeline from first conversation to launch, e.g. “Most projects take X–Y weeks.”</Todo>;
+const proofTodo = <Todo>Add at least one real project: who it was for, the problem, what you built, and a result (customers, revenue or time saved). A screenshot helps. If there’s nothing to show yet, remove this section.</Todo>;
+const costFaq = ['How much does it cost?', <Todo>Give a starting price or explain how you quote, e.g. “Most projects start from …”</Todo>];
+const ownershipFaq = ['Who owns the code and the finished work?', <Todo>State your policy, e.g. “You own everything we build for you, including the code.”</Todo>];
+const limeOSFaq = ['How does this relate to LimeOS?', <>LimeOS is our connected platform that brings ERP, HRM, AI and mobile access together.<Todo>Explain when you recommend LimeOS and when you’d set up or build something else.</Todo></>];
+const migrationFaq = ['Can you bring over our existing data?', <Todo>Say whether you move data across from spreadsheets or old systems, and what’s involved.</Todo>];
+
+// One entry per service page at /services/<key>; ServicePage renders the same layout for each.
+const serviceDetails = {
+  websites: {
+    pageTitle: 'Websites & digital products',
+    intro: { kicker: 'SERVICES / WEBSITES & DIGITAL PRODUCTS', title: 'Websites that', accent: 'do real work.', body: 'Your website is often the first conversation someone has with your business. We design and build sites and web apps that tell your story clearly and turn visitors into customers.', button: 'Talk about your website' },
+    fit: {
+      kicker: 'IS THIS FOR YOU?', title: 'First impressions', accent: 'count online too.',
+      body: 'A good website isn’t just a brochure. It explains what you do in seconds, works beautifully on a phone, and makes it easy for the right people to get in touch, book or buy.',
+      audience: [
+        'Your current site looks dated, loads slowly or doesn’t work well on phones.',
+        'You’re launching a new business, product or brand and need to look credible from day one.',
+        'You want to sell online, take bookings or give customers a portal of their own.',
+      ],
+    },
+    benefits: {
+      kicker: 'WHY IT MATTERS', title: 'More than looks.', accent: 'Built to convert.',
+      items: [
+        { icon: Target, title: 'More enquiries', text: 'A clear story and obvious next steps turn more visitors into conversations.' },
+        { icon: MonitorSmartphone, title: 'Great on every screen', text: 'Most people will find you on a phone. Your site should feel made for it.' },
+        { icon: Gauge, title: 'Fast and findable', text: 'Quick pages and a clean structure help both visitors and search engines.' },
+      ],
+    },
+    included: {
+      kicker: 'WHAT WE BUILD WITH YOU',
+      items: [
+        { icon: PenTool, title: 'Strategy & design', text: 'We work out who the site is for and design each page around what they need to know.' },
+        { icon: Globe2, title: 'React development', text: 'Fast, modern sites built with the same tools behind today’s best web apps.' },
+        { icon: ShoppingCart, title: 'E-commerce', text: 'Product pages, carts and payments for selling online.' },
+        { icon: Plug, title: 'Integrations', text: 'Connect forms, bookings, payments, CRMs and the other tools you already use.' },
+        { icon: Search, title: 'Search-friendly foundations', text: 'Clean structure, page titles and descriptions so search engines understand your site.' },
+        { icon: AppWindow, title: 'Portals & web apps', text: 'Customer or partner logins with the information and actions they need.' },
+      ],
+    },
+    process: {
+      kicker: 'HOW IT WORKS', title: 'From first sketch', accent: 'to launch day.',
+      body: 'You see the design before we build it, and the site before it goes live, so there are no surprises at the end.',
+      timeline: timelineTodo,
+      steps: [
+        ['Discover', 'Agree goals, audience and the pages you need.'],
+        ['Design', 'Shape the look and content, page by page.'],
+        ['Build', 'Develop the site and test it on real devices.'],
+        ['Launch', 'Go live, then measure and improve.'],
+      ],
+    },
+    proof: { kicker: 'OUR WORK', title: 'Sites we’ve', accent: 'designed and built.', body: proofTodo },
+    faqs: [
+      ['Will it work on phones?', 'Yes. Every page is designed and checked for phones, tablets and desktops.'],
+      ['Can I update the content myself?', <Todo>Say whether clients get an easy way to edit text and images, and how.</Todo>],
+      ['Do you handle hosting and domains?', <Todo>Explain whether you set up hosting and domains, and who pays for them.</Todo>],
+      ownershipFaq,
+      costFaq,
+    ],
+    cta: { title: 'Ready for a better website?', body: 'Tell us about your business and what the site needs to do. We’ll suggest a sensible starting point.' },
+  },
+  erp: {
+    pageTitle: 'Business ERP',
+    intro: { kicker: 'SERVICES / BUSINESS ERP', title: 'Your whole operation,', accent: 'in one place.', body: 'ERP — enterprise resource planning — is one system for the everyday work of running a business: orders, stock, purchasing, finance and reports. We set it up around the way your team actually works.', button: 'Talk about your operations' },
+    fit: {
+      kicker: 'IS THIS FOR YOU?', title: 'Fewer spreadsheets.', accent: 'More clarity.',
+      body: 'When orders live in one place, stock in another and finance somewhere else, people spend their day copying numbers between them. An ERP connects those pieces, so everyone works from the same up-to-date information.',
+      audience: [
+        'Your team runs the business on spreadsheets, paper or disconnected tools.',
+        'You don’t trust your stock or sales numbers until someone double-checks them.',
+        'You’re growing, and the way you work today won’t keep up for much longer.',
+      ],
+    },
+    benefits: {
+      kicker: 'WHY ERP', title: 'One source of truth.', accent: 'Fewer surprises.',
+      items: [
+        { icon: Zap, title: 'Less manual work', text: 'Enter information once and let it flow through to stock, invoices and reports.' },
+        { icon: Eye, title: 'See the whole picture', text: 'Live numbers across sales, stock and finance, without waiting for month-end.' },
+        { icon: ChartLine, title: 'Decide with confidence', text: 'Reports and forecasts help you plan purchasing, staffing and cash.' },
+      ],
+    },
+    included: {
+      kicker: 'WHAT WE SET UP WITH YOU',
+      items: [
+        { icon: Wallet, title: 'Finance & accounting', text: 'Invoices, payments, expenses and the numbers your accountant needs.' },
+        { icon: Package, title: 'Inventory', text: 'Stock levels, movements and reorder points across locations.' },
+        { icon: Users, title: 'Sales & CRM', text: 'Customers, quotes and orders in one clear pipeline.' },
+        { icon: ClipboardList, title: 'Purchasing', text: 'Suppliers, purchase orders and goods received.' },
+        { icon: ChartColumn, title: 'Reporting & forecasts', text: 'Dashboards and reports that show what’s happening and what’s coming.' },
+        { icon: Server, title: 'Cloud or on-premise', text: 'Run it in the cloud or on your own servers, depending on your needs.' },
+      ],
+    },
+    process: {
+      kicker: 'HOW IT WORKS', title: 'From how you work', accent: 'to a system that fits.',
+      body: 'We start by understanding your processes, then roll the system out in stages, so your team isn’t asked to change everything overnight.',
+      timeline: timelineTodo,
+      steps: [
+        ['Map', 'Walk through how orders, stock and money move today.'],
+        ['Shape', 'Agree what the system needs to do, and in what order.'],
+        ['Set up', 'Configure the system and connect it to your tools.'],
+        ['Launch', 'Get your team comfortable, then keep improving.'],
+      ],
+    },
+    proof: { kicker: 'OUR WORK', title: 'Operations we’ve', accent: 'helped connect.', body: proofTodo },
+    faqs: [
+      limeOSFaq,
+      ['Can it run on our own servers?', 'Yes. You can choose a managed cloud setup or host it on infrastructure you control.'],
+      migrationFaq,
+      ['Will our team need training?', <Todo>Describe the training and support you provide during and after launch.</Todo>],
+      costFaq,
+    ],
+    cta: { title: 'Ready to connect your operations?', body: 'Tell us how your business runs today. We’ll help you find the right place to start.' },
+  },
+  hrm: {
+    pageTitle: 'HRM & people operations',
+    intro: { kicker: 'SERVICES / HRM & PEOPLE OPERATIONS', title: 'Less admin.', accent: 'Happier people.', body: 'HRM — human resource management — software keeps employee records, attendance, leave, payroll and approvals in one place, so your people team can focus on people rather than paperwork.', button: 'Talk about your HR' },
+    fit: {
+      kicker: 'IS THIS FOR YOU?', title: 'HR that runs', accent: 'without the chasing.',
+      body: 'Leave requests in email threads, attendance on paper, payroll rebuilt in a spreadsheet every month. An HR system brings all of it into one place, with clear approvals and records you can rely on.',
+      audience: [
+        'Your HR team spends hours each month on leave, attendance and payroll admin.',
+        'Employees have to ask someone just to check their leave balance or details.',
+        'You’re hiring, and today’s way of doing things won’t scale with your team.',
+      ],
+    },
+    benefits: {
+      kicker: 'WHY HRM', title: 'Less paperwork.', accent: 'Fewer mistakes.',
+      items: [
+        { icon: Clock, title: 'Hours back every month', text: 'Automate the routine work around leave, attendance and payroll.' },
+        { icon: UserCheck, title: 'Self-service for employees', text: 'People can check their own details and request leave without chasing anyone.' },
+        { icon: ShieldCheck, title: 'Records you can rely on', text: 'One accurate record for every employee, with a clear history of approvals.' },
+      ],
+    },
+    included: {
+      kicker: 'WHAT WE SET UP WITH YOU',
+      items: [
+        { icon: FileText, title: 'Employee records', text: 'Personal details, contracts, documents and history, all in one profile.' },
+        { icon: Clock, title: 'Attendance', text: 'Track working hours, shifts and absences.' },
+        { icon: CalendarDays, title: 'Leave management', text: 'Requests, balances and approvals, without the email threads.' },
+        { icon: Wallet, title: 'Payroll', text: 'Calculate pay from attendance and leave, ready to review and run.' },
+        { icon: Workflow, title: 'Approvals', text: 'Clear approval steps for leave, expenses and changes.' },
+        { icon: Smartphone, title: 'Employee self-service', text: 'Employees view their own information and make requests from any device.' },
+      ],
+    },
+    process: {
+      kicker: 'HOW IT WORKS', title: 'From paperwork', accent: 'to smoother HR.',
+      body: 'We learn your policies first, then set the system up to follow them, so HR doesn’t have to bend to fit the software.',
+      timeline: timelineTodo,
+      steps: [
+        ['Understand', 'Learn your policies, approvals and pain points.'],
+        ['Configure', 'Set up leave rules, shifts, payroll and roles.'],
+        ['Launch', 'Roll it out to HR first, then to every employee.'],
+        ['Improve', 'Refine the setup as your team grows.'],
+      ],
+    },
+    proof: { kicker: 'OUR WORK', title: 'People teams we’ve', accent: 'helped support.', body: proofTodo },
+    faqs: [
+      ['Can employees use it on their phones?', 'Yes. Employee self-service works on phones as well as computers, so people can check details and make requests wherever they are.'],
+      ['Does payroll follow local rules?', <Todo>Explain which countries’ payroll, tax and labour rules you support.</Todo>],
+      migrationFaq,
+      limeOSFaq,
+      costFaq,
+    ],
+    cta: { title: 'Ready to spend less time on HR admin?', body: 'Tell us how your team handles HR today. We’ll show you where a system can take the load.' },
+  },
+  'ai-agents': {
+    pageTitle: 'AI agents & chat',
+    intro: { kicker: 'SERVICES / AI AGENTS & CHAT', title: 'AI that', accent: 'actually helps.', body: 'AI agents are assistants that answer questions and handle routine tasks for your customers or your team. We build them around your own knowledge and systems, so their answers are useful and relevant.', button: 'Talk about AI' },
+    fit: {
+      kicker: 'IS THIS FOR YOU?', title: 'Useful answers.', accent: 'Less repetitive work.',
+      body: 'Many teams answer the same questions every day, or copy information between systems by hand. A well-built AI assistant takes on that repeatable work, and knows when to hand over to a person.',
+      audience: [
+        'Your team answers the same customer questions again and again.',
+        'Staff lose time hunting for information across documents and systems.',
+        'You want to use AI in your business, but in a practical, low-risk way.',
+      ],
+    },
+    benefits: {
+      kicker: 'WHY AI', title: 'Faster answers.', accent: 'Lighter workloads.',
+      items: [
+        { icon: MessageSquare, title: 'Answers around the clock', text: 'Customers get helpful replies at any hour, not just during office time.' },
+        { icon: Zap, title: 'Routine tasks handled', text: 'Let the assistant look up, draft and sort, so people can focus on harder work.' },
+        { icon: BookOpen, title: 'Knowledge at hand', text: 'Staff find what they need by asking, instead of digging through files.' },
+      ],
+    },
+    included: {
+      kicker: 'WHAT WE BUILD WITH YOU',
+      items: [
+        { icon: Headphones, title: 'Customer support assistants', text: 'Answer common questions on your website or chat channels, and pass on what they can’t.' },
+        { icon: Users, title: 'Internal assistants', text: 'Help your team find policies, product details and answers quickly.' },
+        { icon: Workflow, title: 'Workflow automation', text: 'Hand repeatable steps such as sorting, summarising and drafting to AI.' },
+        { icon: Search, title: 'Knowledge search', text: 'Search across your approved documents and data in plain language.' },
+        { icon: Plug, title: 'System connections', text: 'Connect the assistant to the tools and data it needs to be useful.' },
+        { icon: Handshake, title: 'Human handoff', text: 'Pass the conversation to a person when a question needs one.' },
+      ],
+    },
+    process: {
+      kicker: 'HOW IT WORKS', title: 'Start small.', accent: 'Prove it works.',
+      body: 'We begin with one clear use case, try it on real questions and expand once it’s earning its place.',
+      timeline: timelineTodo,
+      steps: [
+        ['Pick a use case', 'Choose one task where AI can clearly help.'],
+        ['Connect knowledge', 'Bring in the documents and data it should use.'],
+        ['Test', 'Try it on real questions and tune the answers.'],
+        ['Roll out', 'Launch, watch how it’s used and improve.'],
+      ],
+    },
+    proof: { kicker: 'OUR WORK', title: 'Assistants we’ve', accent: 'put to work.', body: proofTodo },
+    faqs: [
+      ['Will the AI make things up?', 'No AI is perfect, so we design for that. Assistants work from your approved information, say when they don’t know, and hand off to a person when they should.'],
+      ['Is our data kept private?', <Todo>Explain how customer data is handled, where it’s stored, and which AI providers can see it.</Todo>],
+      ['Which AI models do you use?', <Todo>Name the models or providers you use, or explain how you choose.</Todo>],
+      ['Does it work in Bangla as well as English?', <Todo>Say which languages your assistants support.</Todo>],
+      costFaq,
+    ],
+    cta: { title: 'Curious where AI could help?', body: 'Tell us about the questions and tasks that eat up your team’s time. We’ll suggest a sensible first use case.' },
+  },
+  mobile: {
+    pageTitle: 'Mobile & field tools',
+    intro: { kicker: 'SERVICES / MOBILE & FIELD TOOLS', title: 'Your business,', accent: 'in their pocket.', body: 'Mobile apps and tools that give people away from a desk — in the field, on the shop floor or with customers — the same useful view as everyone in the office.', button: 'Talk about mobile' },
+    fit: {
+      kicker: 'IS THIS FOR YOU?', title: 'Work happens', accent: 'away from desks too.',
+      body: 'Sales reps, drivers, technicians and managers on the move often rely on phone calls and paper to stay in the loop. A mobile tool puts the right information and actions in their hands, connected to the systems back at base.',
+      audience: [
+        'Your field team phones the office to check stock, orders or schedules.',
+        'Information is written down on paper and typed up again later.',
+        'You want employees or customers to reach your systems from their phones.',
+      ],
+    },
+    benefits: {
+      kicker: 'WHY MOBILE', title: 'The right information.', accent: 'Right where it’s needed.',
+      items: [
+        { icon: Zap, title: 'Faster decisions on the spot', text: 'People can check, update and approve where they are, instead of waiting.' },
+        { icon: ClipboardList, title: 'No more double entry', text: 'Capture information once, on the phone, straight into your systems.' },
+        { icon: Eye, title: 'Everyone in sync', text: 'Office and field teams see the same up-to-date information.' },
+      ],
+    },
+    included: {
+      kicker: 'WHAT WE BUILD WITH YOU',
+      items: [
+        { icon: Layers3, title: 'ERP companion apps', text: 'Check stock, orders and customers from a phone.' },
+        { icon: MapPin, title: 'Field workflows', text: 'Visits, deliveries, checklists and photos, captured where the work happens.' },
+        { icon: UserCheck, title: 'Employee self-service', text: 'Attendance, leave and personal details from any phone.' },
+        { icon: Bell, title: 'Push updates', text: 'Timely notifications for approvals, assignments and changes.' },
+        { icon: MonitorSmartphone, title: 'Responsive web apps', text: 'Browser-based tools that work on any device, with nothing to install.' },
+        { icon: Network, title: 'Connected to your systems', text: 'Linked to your ERP, HRM or other tools, so information flows both ways.' },
+      ],
+    },
+    process: {
+      kicker: 'HOW IT WORKS', title: 'Designed for thumbs,', accent: 'not desks.',
+      body: 'We look at how people work on the move, then design screens that are quick to use one-handed and on the go.',
+      timeline: timelineTodo,
+      steps: [
+        ['Observe', 'See how the work happens in the field today.'],
+        ['Design', 'Shape simple screens around the key tasks.'],
+        ['Build & connect', 'Develop the app and link it to your systems.'],
+        ['Roll out', 'Get it on people’s phones and refine from feedback.'],
+      ],
+    },
+    proof: { kicker: 'OUR WORK', title: 'Tools we’ve put', accent: 'in people’s hands.', body: proofTodo },
+    faqs: [
+      ['Do you build for iPhone and Android?', <Todo>Say which platforms you build for, and whether it’s one app for both.</Todo>],
+      ['Will it work without internet?', <Todo>Say whether apps can work offline and sync once they’re back online.</Todo>],
+      ['Will it be on the App Store and Google Play?', <Todo>Explain whether you publish apps to the stores or deliver them another way.</Todo>],
+      ['Can it connect to LimeOS or our existing systems?', <>LimeOS includes a mobile companion app.<Todo>Say which other systems you can connect mobile tools to.</Todo></>],
+      costFaq,
+    ],
+    cta: { title: 'Got people working on the move?', body: 'Tell us what they need to see and do away from a desk. We’ll help you shape the right tool.' },
+  },
+  saas: {
+    pageTitle: 'SaaS products',
+    intro: { kicker: 'SERVICES / SAAS PRODUCTS', title: 'Software people', accent: 'happily pay for.', body: 'SaaS — software as a service — is software your customers use online and pay for by subscription. We help you design it, build it and launch it, ready for real customers.', button: 'Talk about your product' },
+    fit: {
+      kicker: 'IS THIS FOR YOU?', title: 'A good idea.', accent: 'Ready to become a product.',
+      body: 'Instead of selling software once, a SaaS product runs in the cloud. Customers sign up, log in and pay monthly or yearly. You keep improving one product, and every customer gets the update at the same time.',
+      audience: [
+        'You have an idea for software that people or businesses would pay for every month.',
+        'You’ve built a tool for your own team, and other companies keep asking to use it.',
+        'You run a service business and want to turn part of it into a product that scales.',
+      ],
+    },
+    benefits: {
+      kicker: 'WHY SAAS', title: 'Built once.', accent: 'Earning every month.',
+      items: [
+        { icon: Repeat, title: 'Recurring revenue', text: 'Subscriptions turn one-off sales into predictable monthly income you can plan around.' },
+        { icon: UserPlus, title: 'Customers serve themselves', text: 'People can find you, sign up, pay and get started without waiting on your team.' },
+        { icon: TrendingUp, title: 'Grow without starting over', text: 'One product can serve ten customers or ten thousand. Every improvement reaches all of them at once.' },
+      ],
+    },
+    included: {
+      kicker: 'WHAT WE BUILD WITH YOU',
+      items: [
+        { icon: PenTool, title: 'Product design & first version', text: 'We shape the core idea into a focused first version you can put in front of real users quickly.' },
+        { icon: AppWindow, title: 'Sign-up & onboarding', text: 'Smooth account creation and a first-run experience that helps new customers find value fast.' },
+        { icon: CreditCard, title: 'Subscriptions & billing', text: 'Plans, trials, payments and invoices, connected to a payment provider that suits your market.' },
+        { icon: Network, title: 'Multi-tenant accounts', text: 'Each customer’s data kept separate and secure, with roles for the people on their team.' },
+        { icon: ChartColumn, title: 'Admin & insights', text: 'A back office to manage customers and plans, plus the numbers that show how the product is doing.' },
+        { icon: Cloud, title: 'Cloud hosting & scaling', text: 'Set up to run reliably online and grow comfortably with your customer base.' },
+      ],
+    },
+    process: {
+      kicker: 'HOW IT WORKS', title: 'From idea', accent: 'to paying customers.',
+      body: 'We start small, launch early and improve with real feedback, so you aren’t paying for features nobody uses.',
+      timeline: <Todo>Typical timeline from first conversation to launch, e.g. “A first version usually takes X–Y weeks.”</Todo>,
+      steps: [
+        ['Discover', 'Agree who it’s for and what the first version must do.'],
+        ['Build', 'Design and develop it, with regular check-ins.'],
+        ['Launch', 'Go live with real customers and billing switched on.'],
+        ['Improve', 'Use feedback and data to decide what comes next.'],
+      ],
+    },
+    proof: {
+      kicker: 'OUR WORK', title: 'Products we’ve', accent: 'helped launch.',
+      body: <Todo>Add at least one real project: who it was for, the problem, what you built, and a result (customers, revenue or time saved). A screenshot helps. If there’s nothing to show yet, remove this section.</Todo>,
+    },
+    faqs: [
+      ['Do I need to be technical?', 'No. We explain choices in plain language and handle the technical side. You bring what you know about your customers and your market.'],
+      ['Who owns the code and the product?', <Todo>State your policy, e.g. “You own everything we build for you, including the code.”</Todo>],
+      ['How much does it cost to build?', <Todo>Give a starting price or explain how you quote, e.g. “Most first versions start from …”</Todo>],
+      ['What does it cost to run once it’s live?', <Todo>Explain who pays for hosting, roughly how much, and whether you offer a monthly support plan.</Todo>],
+      ['Can you take over an existing SaaS product?', <Todo>Say whether you do this, and what you’d need to review first.</Todo>],
+    ],
+    cta: { title: 'Got a product idea?', body: 'Tell us what it does and who it’s for. We’ll help you work out a sensible first version.' },
+  },
+};
+
+function ServicePage({ service: { intro, fit, benefits, included, process, proof, faqs, cta } }) {
+  return <><PageIntro kicker={intro.kicker} title={intro.title} accent={intro.accent} body={intro.body}><div className="intro-actions"><a href="/contact" className="button button-lime">{intro.button} <ArrowUpRight size={16}/></a><a href="/services" className="text-link">All services <ArrowRight size={15}/></a></div></PageIntro><section className="service-fit section-pad"><div><Eyebrow dark>{fit.kicker}</Eyebrow><h2>{fit.title}<br/><span>{fit.accent}</span></h2><p>{fit.body}</p></div><ul className="fit-list">{fit.audience.map(item=><li key={item}><span className="check-mark"><Check size={13}/></span>{item}</li>)}</ul></section><section className="benefits section-pad"><Eyebrow>{benefits.kicker}</Eyebrow><h2>{benefits.title}<br/><span>{benefits.accent}</span></h2><div className="benefit-grid">{benefits.items.map(({icon:Icon,title,text},i)=><article key={title}><div className="benefit-top"><span>0{i + 1}</span><Icon size={21}/></div><h3>{title}</h3><p>{text}</p></article>)}</div></section><section className="capabilities section-pad"><Eyebrow dark>{included.kicker}</Eyebrow><div className="capability-grid">{included.items.map(({icon:Icon,title,text})=><article key={title}><Icon/><h3>{title}</h3><p>{text}</p></article>)}</div></section><section className="approach section-pad"><div className="approach-aside"><Eyebrow>{process.kicker}</Eyebrow><div className="approach-index">LT<br/><span>STUDIO / 01</span></div></div><div className="approach-main"><h2>{process.title}<br/><span>{process.accent}</span></h2><div className="approach-bottom"><div className="approach-copy"><p>{process.body}</p>{process.timeline}</div><div className="steps">{process.steps.map(([title,text],i)=><div key={title}><b>0{i + 1}</b><span>{title}<br/><small>{text}</small></span></div>)}</div></div></div></section><section className="proof section-pad"><Eyebrow dark>{proof.kicker}</Eyebrow><h2>{proof.title}<br/><span>{proof.accent}</span></h2>{proof.body}</section><section className="faq section-pad"><div><Eyebrow>QUESTIONS, ANSWERED</Eyebrow><h2>Good questions<br/><span>to ask early.</span></h2></div><div className="faq-list">{faqs.map(([question,answer])=><details key={question}><summary>{question}<ChevronDown size={17}/></summary><div className="faq-answer">{answer}</div></details>)}</div></section><CTA title={cta.title} body={cta.body}/></>;
+}
 
 function Dashboard() {
   return <div className="dash-wrap" aria-label="Illustration of a LimeOS analytics dashboard"><div className="orbit orbit-one"/><div className="orbit orbit-two"/><div className="dash-card"><div className="dash-top"><div className="dash-brand"><span className="mini-mark">✳</span> LimeOS <span className="dash-label">OVERVIEW</span></div><span className="avatar">LT</span></div><div className="dash-title">Good morning, team <span>✦</span></div><div className="dash-sub">A live view across your business.</div><div className="metric-row"><div className="metric"><small>REVENUE · THIS MONTH</small><strong>$84,260</strong><em>↗ 12.8%</em></div><div className="metric"><small>ORDERS FULFILLED</small><strong>1,284</strong><em>↗ 8.2%</em></div></div><div className="chart-head"><b>Revenue overview</b><span>Last 7 months⌄</span></div><div className="chart"><div className="chart-grid"><i/><i/><i/><i/></div><svg viewBox="0 0 480 110" preserveAspectRatio="none"><defs><linearGradient id="fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor="#b5e44a" stopOpacity=".28"/><stop offset="1" stopColor="#b5e44a" stopOpacity="0"/></linearGradient></defs><path d="M0 87 C25 82 36 74 58 79 S93 60 119 68 S156 53 177 60 S212 38 239 48 S273 35 296 42 S337 22 358 33 S399 18 420 25 S455 10 480 13 V110 H0Z" fill="url(#fill)"/><path d="M0 87 C25 82 36 74 58 79 S93 60 119 68 S156 53 177 60 S212 38 239 48 S273 35 296 42 S337 22 358 33 S399 18 420 25 S455 10 480 13" fill="none" stroke="#b5e44a" strokeWidth="3"/></svg><div className="months"><span>JAN</span><span>FEB</span><span>MAR</span><span>APR</span><span>MAY</span><span>JUN</span><span>JUL</span></div></div><div className="dash-foot"><span><i className="live-dot"/> All systems in sync</span><span>Updated just now</span></div></div><div className="float-note note-ai"><span className="note-icon"><Sparkles size={15}/></span><div><small>AI INSIGHT</small><b>Stock is trending up</b></div><span className="note-up">↗</span></div><div className="float-note note-mobile"><div className="phone-icon"><MonitorSmartphone size={17}/></div><div><small>YOUR BUSINESS</small><b>In your pocket.</b></div></div><div className="spark spark-a">✳</div><div className="spark spark-b">✳</div></div>;
@@ -32,7 +369,8 @@ function Dashboard() {
 function Header() {
   const [open, setOpen] = useState(false);
   const path = window.location.pathname.replace(/\/$/, '') || '/';
-  return <header className="nav-shell fixed top-0 inset-x-0 z-50 bg-[#101d1b]/90 backdrop-blur-xl shadow-lg shadow-black/10"><a href="/" className="brand"><picture><source srcSet="/lime-logo.avif" type="image/avif"/><source srcSet="/lime-logo.webp" type="image/webp"/><img src="/lime-logo.png" alt="Lime Tech"/></picture><span className="brand-tag">DIGITAL, GROWN WELL.</span></a><nav className="nav-links" aria-label="Main navigation">{navItems.map(item => <a key={item.href} href={item.href} className={path === item.href ? 'nav-current' : ''} aria-current={path === item.href ? 'page' : undefined}>{item.label}</a>)}<a className="nav-cta" href="/contact">Let’s talk <ArrowUpRight size={15}/></a></nav><Dialog open={open} onOpenChange={setOpen}><DialogTrigger asChild><button className="mobile-toggle" aria-label={open ? 'Close navigation' : 'Open navigation'}>{open ? <X/> : <Menu/>}</button></DialogTrigger><DialogContent className="mobile-nav-panel"><DialogTitle className="sr-only">Lime Tech navigation</DialogTitle><DialogDescription className="sr-only">Choose a page to explore.</DialogDescription><div className="mobile-nav-top"><span>LT / EXPLORE</span><DialogClose asChild><button className="mobile-nav-close" aria-label="Close navigation"><X size={18}/></button></DialogClose></div><nav className="mobile-nav-links" aria-label="Mobile navigation">{[...navItems, { label: 'Contact', href: '/contact' }].map((item, index) => <DialogClose asChild key={item.href}><a href={item.href} className={path === item.href ? 'mobile-nav-link nav-current' : 'mobile-nav-link'} aria-current={path === item.href ? 'page' : undefined}><span><small>0{index + 1}</small>{item.label}</span><ArrowUpRight size={18}/></a></DialogClose>)}</nav><div className="mobile-nav-bottom"><span>BUILT WITH PURPOSE IN BANGLADESH</span><a href="mailto:lime.tech.contact@gmail.com">LET’S TALK <ArrowUpRight size={15}/></a></div></DialogContent></Dialog></header>;
+  const isCurrent = (href) => path === href || (href !== '/' && path.startsWith(href + '/'));
+  return <header className="nav-shell fixed top-0 inset-x-0 z-50 bg-[#101d1b]/90 backdrop-blur-xl shadow-lg shadow-black/10"><a href="/" className="brand"><picture><source srcSet="/lime-logo.avif" type="image/avif"/><source srcSet="/lime-logo.webp" type="image/webp"/><img src="/lime-logo.png" alt="Lime Tech"/></picture><span className="brand-tag">DIGITAL, GROWN WELL.</span></a><nav className="nav-links" aria-label="Main navigation">{navItems.map(item => <a key={item.href} href={item.href} className={isCurrent(item.href) ? 'nav-current' : ''} aria-current={isCurrent(item.href) ? 'page' : undefined}>{item.label}</a>)}<a className="nav-cta" href="/contact">Let’s talk <ArrowUpRight size={15}/></a></nav><Dialog open={open} onOpenChange={setOpen}><DialogTrigger asChild><button className="mobile-toggle" aria-label={open ? 'Close navigation' : 'Open navigation'}>{open ? <X/> : <Menu/>}</button></DialogTrigger><DialogContent className="mobile-nav-panel"><DialogTitle className="sr-only">Lime Tech navigation</DialogTitle><DialogDescription className="sr-only">Choose a page to explore.</DialogDescription><div className="mobile-nav-top"><span>LT / EXPLORE</span><DialogClose asChild><button className="mobile-nav-close" aria-label="Close navigation"><X size={18}/></button></DialogClose></div><nav className="mobile-nav-links" aria-label="Mobile navigation">{[...navItems, { label: 'Contact', href: '/contact' }].map((item, index) => <DialogClose asChild key={item.href}><a href={item.href} className={isCurrent(item.href) ? 'mobile-nav-link nav-current' : 'mobile-nav-link'} aria-current={isCurrent(item.href) ? 'page' : undefined}><span><small>0{index + 1}</small>{item.label}</span><ArrowUpRight size={18}/></a></DialogClose>)}</nav><div className="mobile-nav-bottom"><span>BUILT WITH PURPOSE IN BANGLADESH</span><a href="mailto:lime.tech.contact@gmail.com">LET’S TALK <ArrowUpRight size={15}/></a></div></DialogContent></Dialog></header>;
 }
 
 function Footer() {
@@ -44,7 +382,7 @@ function PageIntro({ kicker, title, accent, body, light = false, children }) { r
 function CTA({ title = 'Have a good one in mind?', body = 'Tell us what you’re trying to make easier. We’ll help you shape the next step.' }) { return <section className="cta-band section-pad"><div><Eyebrow>LET’S BUILD SOMETHING USEFUL</Eyebrow><h2>{title}</h2><p>{body}</p></div><a href="/contact" className="button button-lime">Start a conversation <ArrowUpRight size={16}/></a></section>; }
 
 function HomePage() {
-  return <><section className="hero section-pad"><div className="hero-grid"/><div className="hero-copy"><Eyebrow>TECHNOLOGY FOR WHAT’S NEXT</Eyebrow><h1>Make your<br/>next move <span className="lime-word">count<span className="period">.</span></span></h1><p className="hero-intro">We build the digital foundations that help ambitious businesses move forward—from their first website to the systems that run the whole show.</p><div className="hero-actions"><a href="/contact" className="button button-lime">Tell us what you’re building <ArrowUpRight size={17}/></a><a href="/services" className="text-link">Explore our services <ArrowDownRight size={16}/></a></div><div className="hero-note"><span className="note-rule"/> BIG IDEAS. THOUGHTFUL BUILDING. REAL-WORLD RESULTS.</div></div><Dashboard/><div className="hero-index"><span>01</span><i/> DIGITAL PARTNER FOR GROWING TEAMS</div></section><section className="ticker"><div className="ticker-track">{['WEB EXPERIENCES','CONNECTED OPERATIONS','HUMAN-CENTRED HR','PRACTICAL AI','BETTER BUSINESS DATA','WEB EXPERIENCES','CONNECTED OPERATIONS'].map((x,i)=><span key={i}>{x}<b>✳</b></span>)}</div></section><section className="services section-pad"><div className="section-heading"><div><Eyebrow dark>WHAT WE MAKE POSSIBLE</Eyebrow><h2>One partner.<br/><span className="muted-heading">Room to grow.</span></h2></div><p>From a first impression online to a clearer picture of the whole business, we help the pieces work together.</p></div><div className="service-grid">{services.slice(0,4).map(({n,icon:Icon,title,text})=><article className="service-card" key={n}><div className="service-top"><span>{n} / 05</span><Icon size={22} strokeWidth={1.5}/></div><h3>{title}</h3><p>{text}</p><a href="/services" aria-label={'Explore ' + title}><ArrowUpRight size={19}/></a></article>)}</div><div className="service-foot"><span>DESIGNED AROUND THE WAY YOUR BUSINESS WORKS.</span><a href="/services">See all services <ArrowRight size={15}/></a></div></section><section className="platform section-pad"><div className="platform-top"><Eyebrow>ONE CONNECTED BUSINESS HQ</Eyebrow><div className="platform-stamp"><span>YOUR BUSINESS.<br/>IN SYNC.</span><Layers3 size={28}/></div></div><div className="platform-layout"><div className="platform-copy"><div className="product-name"><span className="product-symbol">✳</span> Lime<span>OS</span></div><h2>Every moving part.<br/><span>Moving together.</span></h2><p>ERP, HRM, helpful AI, forecasting and mobile access—connected in a system that can run in your cloud or on your own servers.</p><div className="platform-points"><div><span className="check-mark"><Check size={13}/></span> One connected ERP + HRM</div><div><span className="check-mark"><Check size={13}/></span> Built-in AI chat</div><div><span className="check-mark"><Check size={13}/></span> Forecasting reports</div><div><span className="check-mark"><Check size={13}/></span> Mobile companion app</div></div><a href="/limeos" className="button button-outline">Explore LimeOS <ArrowUpRight size={16}/></a></div><SystemDiagram/></div></section><section className="home-next section-pad"><div className="home-next-copy"><Eyebrow dark>THE NEXT STEP, MADE CLEARER</Eyebrow><h2>Less guesswork.<br/><span>More next steps.</span></h2><p>We help teams make good technology decisions and build with a clear path from first idea to everyday use.</p><a href="/about" className="text-link dark-link">How we work <ArrowRight size={16}/></a></div><div className="home-next-card"><div className="next-card-icon"><MessageCircle size={22}/></div><span>NO COOKIE-CUTTER PLANS</span><h3>Start with your actual business.</h3><p>Get a partner who asks the right questions, then makes the right-sized solution with you.</p><a href="/about">Meet our approach <ArrowUpRight size={17}/></a></div></section><CTA/></>;
+  return <><section className="hero section-pad"><div className="hero-grid"/><div className="hero-copy"><Eyebrow>TECHNOLOGY FOR WHAT’S NEXT</Eyebrow><h1>Make your<br/>next move <span className="lime-word">count<span className="period">.</span></span></h1><p className="hero-intro">We build the digital foundations that help ambitious businesses move forward—from their first website to the systems that run the whole show.</p><div className="hero-actions"><a href="/contact" className="button button-lime">Tell us what you’re building <ArrowUpRight size={17}/></a><a href="/services" className="text-link">Explore our services <ArrowDownRight size={16}/></a></div><div className="hero-note"><span className="note-rule"/> BIG IDEAS. THOUGHTFUL BUILDING. REAL-WORLD RESULTS.</div></div><Dashboard/><div className="hero-index"><span>01</span><i/> DIGITAL PARTNER FOR GROWING TEAMS</div></section><section className="ticker"><div className="ticker-track">{[...tickerItems, ...tickerItems, ...tickerItems, ...tickerItems].map((x,i)=><span key={i} aria-hidden={i >= tickerItems.length || undefined}>{x}<b>✳</b></span>)}</div></section><section className="services section-pad"><div className="section-heading"><div><Eyebrow dark>WHAT WE MAKE POSSIBLE</Eyebrow><h2>One partner.<br/><span className="muted-heading">Room to grow.</span></h2></div><p>From a first impression online to a clearer picture of the whole business, we help the pieces work together.</p></div><div className="service-grid">{services.slice(0,4).map(({n,icon:Icon,href,title,text})=><article className="service-card" key={n}><div className="service-top"><span>{n} / {String(services.length).padStart(2, '0')}</span><Icon size={22} strokeWidth={1.5}/></div><h3>{title}</h3><p>{text}</p><a href={href} aria-label={'Explore ' + title}><ArrowUpRight size={19}/></a></article>)}</div><div className="service-foot"><span>DESIGNED AROUND THE WAY YOUR BUSINESS WORKS.</span><a href="/services">See all services <ArrowRight size={15}/></a></div></section><section className="platform section-pad"><div className="platform-top"><Eyebrow>ONE CONNECTED BUSINESS HQ</Eyebrow><div className="platform-stamp"><span>YOUR BUSINESS.<br/>IN SYNC.</span><Layers3 size={28}/></div></div><div className="platform-layout"><div className="platform-copy"><div className="product-name"><span className="product-symbol">✳</span> Lime<span>OS</span></div><h2>Every moving part.<br/><span>Moving together.</span></h2><p>ERP, HRM, helpful AI, forecasting and mobile access—connected in a system that can run in your cloud or on your own servers.</p><div className="platform-points"><div><span className="check-mark"><Check size={13}/></span> One connected ERP + HRM</div><div><span className="check-mark"><Check size={13}/></span> Built-in AI chat</div><div><span className="check-mark"><Check size={13}/></span> Forecasting reports</div><div><span className="check-mark"><Check size={13}/></span> Mobile companion app</div></div><a href="/limeos" className="button button-outline">Explore LimeOS <ArrowUpRight size={16}/></a></div><SystemDiagram/></div></section><section className="home-next section-pad"><div className="home-next-copy"><Eyebrow dark>THE NEXT STEP, MADE CLEARER</Eyebrow><h2>Less guesswork.<br/><span>More next steps.</span></h2><p>We help teams make good technology decisions and build with a clear path from first idea to everyday use.</p><a href="/about" className="text-link dark-link">How we work <ArrowRight size={16}/></a></div><div className="home-next-card"><div className="next-card-icon"><MessageCircle size={22}/></div><span>NO COOKIE-CUTTER PLANS</span><h3>Start with your actual business.</h3><p>Get a partner who asks the right questions, then makes the right-sized solution with you.</p><a href="/about">Meet our approach <ArrowUpRight size={17}/></a></div></section><CTA/></>;
 }
 
 function DeferredThreeCore() {
@@ -74,7 +412,7 @@ function DeferredThreeCore() {
 function SystemDiagram() { return <div className="platform-visual"><div className="platform-ring ring-inner"/><div className="platform-ring ring-outer"/><DeferredThreeCore/><div className="platform-center"><span className="platform-spark">✳</span><strong>One business.<br/>A clearer picture.</strong><small>CONNECTED BY LIMEOS</small></div><div className="node node-erp"><Layers3/><span>ERP</span></div><div className="node node-hr"><Users/><span>HRM</span></div><div className="node node-ai"><Bot/><span>AI + INSIGHTS</span></div><div className="node node-mobile"><MonitorSmartphone/><span>MOBILE</span></div><div className="connect-line line-1"/><div className="connect-line line-2"/><div className="connect-line line-3"/><div className="connect-line line-4"/></div>; }
 
 function ServicesPage() {
-  return <><PageIntro kicker="SERVICES / BUILT AROUND YOU" title="Technology that" accent="earns its place." body="Need a sharper website, a more connected operation, or an AI assistant that handles real work? We’ll shape the right solution around your goals."><a href="/contact" className="button button-lime">Tell us what you need <ArrowUpRight size={16}/></a></PageIntro><section className="service-details section-pad"><div className="service-details-head"><Eyebrow dark>WHAT WE CAN BUILD TOGETHER</Eyebrow><p>Start with one clear need. Add capabilities as your business grows.</p></div><div className="service-detail-grid">{services.map(({n,icon:Icon,title,detail,tags})=><article className="service-detail" key={n}><div className="service-detail-top"><span>{n}</span><Icon size={23}/></div><h2>{title}</h2><p>{detail}</p><ul>{tags.map(tag=><li key={tag}><Check size={13}/>{tag}</li>)}</ul><a href="/contact">Discuss this service <ArrowRight size={15}/></a></article>)}</div></section><section className="approach section-pad"><div className="approach-aside"><Eyebrow>MADE WITH YOU</Eyebrow><div className="approach-index">LT<br/><span>STUDIO / 01</span></div></div><div className="approach-main"><h2>The right-sized<br/><span>way forward.</span></h2><div className="approach-bottom"><p>No mystery process. No technology for technology’s sake. Just a curious team, a clear plan and work made to earn its place in your business.</p><div className="steps"><div><b>01</b><span>Listen<br/><small>Start with the real problem.</small></span></div><div><b>02</b><span>Shape<br/><small>Map the right-sized solution.</small></span></div><div><b>03</b><span>Make<br/><small>Build, launch and improve.</small></span></div></div></div></div></section><CTA title="Not sure where to start?"/></>;
+  return <><PageIntro kicker="SERVICES / BUILT AROUND YOU" title="Technology that" accent="earns its place." body="Need a sharper website, a SaaS product, a more connected operation, or an AI assistant that handles real work? We’ll shape the right solution around your goals."><a href="/contact" className="button button-lime">Tell us what you need <ArrowUpRight size={16}/></a></PageIntro><section className="service-details section-pad"><div className="service-details-head"><Eyebrow dark>WHAT WE CAN BUILD TOGETHER</Eyebrow><p>Start with one clear need. Add capabilities as your business grows.</p></div><div className="service-detail-grid">{services.map(({n,icon:Icon,href,title,detail,tags})=><article className="service-detail" key={n}><div className="service-detail-top"><span>{n}</span><Icon size={23}/></div><h2>{title}</h2><p>{detail}</p><ul>{tags.map(tag=><li key={tag}><Check size={13}/>{tag}</li>)}</ul><div className="service-detail-links">{href && <a href={href}>Learn more <ArrowRight size={15}/></a>}<a href="/contact">Discuss this service <ArrowRight size={15}/></a></div></article>)}</div></section><section className="approach section-pad"><div className="approach-aside"><Eyebrow>MADE WITH YOU</Eyebrow><div className="approach-index">LT<br/><span>STUDIO / 01</span></div></div><div className="approach-main"><h2>The right-sized<br/><span>way forward.</span></h2><div className="approach-bottom"><p>No mystery process. No technology for technology’s sake. Just a curious team, a clear plan and work made to earn its place in your business.</p><div className="steps"><div><b>01</b><span>Listen<br/><small>Start with the real problem.</small></span></div><div><b>02</b><span>Shape<br/><small>Map the right-sized solution.</small></span></div><div><b>03</b><span>Make<br/><small>Build, launch and improve.</small></span></div></div></div></div></section><CTA title="Not sure where to start?"/></>;
 }
 
 function LimeOSPage() {
@@ -87,6 +425,7 @@ function AboutPage() {
 }
 
 const CONTACT_EMAIL = 'lime.tech.contact@gmail.com';
+const SUPPORT_EMAIL = 'support@limetech.site';
 // FormSubmit relays the enquiry to the inbox; the first submission sends a one-time activation email to CONTACT_EMAIL.
 const CONTACT_ENDPOINT = 'https://formsubmit.co/ajax/' + CONTACT_EMAIL;
 const formMessages = {
@@ -117,10 +456,10 @@ function ContactPage() {
       setStatus('error');
     }
   };
-  return <><section className="contact-page section-pad"><div className="contact-page-copy"><Eyebrow>CONTACT / YOUR NEXT CHAPTER</Eyebrow><h1>Let’s make<br/>something <span>useful.</span></h1><p>Share a little about what you’re trying to do. We’ll get back to you and work out a sensible next step.</p><div className="contact-email"><span>OR WRITE TO US DIRECTLY</span><a href={'mailto:' + CONTACT_EMAIL}>{CONTACT_EMAIL} <ArrowUpRight size={15}/></a></div><div className="contact-email"><span>CALL OR WHATSAPP</span><a href="tel:+8801673014744">+8801673014744 <ArrowUpRight size={15}/></a></div><div className="contact-prompt"><MessageCircle size={19}/><span>Not sure which service fits?<br/><b>That’s a fine place to start.</b></span></div></div><form className="contact-form" onSubmit={submit} onInput={() => status === 'sent' && setStatus('idle')}><div className="contact-form-heading"><span>PROJECT ENQUIRY</span><i>01 / 01</i></div><label>Your name<input required name="name" autoComplete="name" maxLength={120} placeholder="What should we call you?"/></label><label>Email address<input required type="email" name="email" autoComplete="email" maxLength={160} placeholder="you@company.com"/></label><label>What are you thinking?<textarea required name="message" rows="5" maxLength={5000} placeholder="A website, a better way to work, an ambitious idea…"/></label><input className="form-honey" type="text" name="_honey" tabIndex={-1} autoComplete="off" aria-hidden="true"/><button className="button button-lime" type="submit" disabled={status === 'sending'}>{status === 'sending' ? 'Sending…' : status === 'sent' ? 'Message sent' : 'Start the conversation'}{status === 'sent' ? <Check size={17}/> : <ArrowUpRight size={17}/>}</button><small className={'form-note' + (status === 'error' ? ' form-note-error' : status === 'sent' ? ' form-note-success' : '')} role="status" aria-live="polite">{status === 'error' ? <>We couldn’t send that just now. Please try again, or email us at <a href={'mailto:' + CONTACT_EMAIL}>{CONTACT_EMAIL}</a>.</> : formMessages[status]}</small></form></section><section className="contact-bottom section-pad"><span>WE CAN HELP WITH</span><a href="/services">Websites <ChevronRight size={14}/></a><a href="/services">ERP + HRM <ChevronRight size={14}/></a><a href="/limeos">LimeOS <ChevronRight size={14}/></a><a href="/services">AI + mobile <ChevronRight size={14}/></a></section></>;
+  return <><section className="contact-page section-pad"><div className="contact-page-copy"><Eyebrow>CONTACT / YOUR NEXT CHAPTER</Eyebrow><h1>Let’s make<br/>something <span>useful.</span></h1><p>Share a little about what you’re trying to do. We’ll get back to you and work out a sensible next step.</p><div className="contact-email"><span>OR WRITE TO US DIRECTLY</span><a href={'mailto:' + CONTACT_EMAIL}>{CONTACT_EMAIL} <ArrowUpRight size={15}/></a></div><div className="contact-email"><span>CUSTOMER SUPPORT</span><a href={'mailto:' + SUPPORT_EMAIL}>{SUPPORT_EMAIL} <ArrowUpRight size={15}/></a></div><div className="contact-email"><span>CALL OR WHATSAPP</span><a href="tel:+8801673014744">+8801673014744 <ArrowUpRight size={15}/></a></div><div className="contact-prompt"><MessageCircle size={19}/><span>Not sure which service fits?<br/><b>That’s a fine place to start.</b></span></div></div><form className="contact-form" onSubmit={submit} onInput={() => status === 'sent' && setStatus('idle')}><div className="contact-form-heading"><span>PROJECT ENQUIRY</span><i>01 / 01</i></div><label>Your name<input required name="name" autoComplete="name" maxLength={120} placeholder="What should we call you?"/></label><label>Email address<input required type="email" name="email" autoComplete="email" maxLength={160} placeholder="you@company.com"/></label><label>What are you thinking?<textarea required name="message" rows="5" maxLength={5000} placeholder="A website, a better way to work, an ambitious idea…"/></label><input className="form-honey" type="text" name="_honey" tabIndex={-1} autoComplete="off" aria-hidden="true"/><button className="button button-lime" type="submit" disabled={status === 'sending'}>{status === 'sending' ? 'Sending…' : status === 'sent' ? 'Message sent' : 'Start the conversation'}{status === 'sent' ? <Check size={17}/> : <ArrowUpRight size={17}/>}</button><small className={'form-note' + (status === 'error' ? ' form-note-error' : status === 'sent' ? ' form-note-success' : '')} role="status" aria-live="polite">{status === 'error' ? <>We couldn’t send that just now. Please try again, or email us at <a href={'mailto:' + CONTACT_EMAIL}>{CONTACT_EMAIL}</a>.</> : formMessages[status]}</small></form></section><section className="contact-bottom section-pad"><span>WE CAN HELP WITH</span><a href="/services/websites">Websites <ChevronRight size={14}/></a><a href="/services/erp">ERP + HRM <ChevronRight size={14}/></a><a href="/limeos">LimeOS <ChevronRight size={14}/></a><a href="/services/ai-agents">AI + mobile <ChevronRight size={14}/></a><a href="/services/saas">SaaS <ChevronRight size={14}/></a></section></>;
 }
 
-const routes = { '/': { title: 'Home', component: HomePage }, '/services': { title: 'Services', component: ServicesPage }, '/limeos': { title: 'LimeOS', component: LimeOSPage }, '/about': { title: 'About', component: AboutPage }, '/contact': { title: 'Contact', component: ContactPage } };
+const routes = { '/': { title: 'Home', component: HomePage }, '/services': { title: 'Services', component: ServicesPage }, '/limeos': { title: 'LimeOS', component: LimeOSPage }, '/about': { title: 'About', component: AboutPage }, '/contact': { title: 'Contact', component: ContactPage }, ...Object.fromEntries(Object.entries(serviceDetails).map(([slug, service]) => ['/services/' + slug, { title: service.pageTitle, component: () => <ServicePage service={service}/> }])) };
 
 export default function SiteApp() {
   const pageRef = useRef(null);
@@ -181,21 +520,21 @@ export default function SiteApp() {
           });
         }
 
-        gsap.utils.toArray('.service-grid, .service-detail-grid, .capability-grid, .value-grid, .steps').forEach((grid) => {
+        gsap.utils.toArray('.service-grid, .service-detail-grid, .capability-grid, .value-grid, .steps, .benefit-grid, .fit-list').forEach((grid) => {
           gsap.from(grid.children, {
             y: 28, autoAlpha: 0, duration: 0.7, stagger: 0.09, ease: 'power3.out',
             scrollTrigger: { trigger: grid, start: 'clamp(top 82%)', once: true }, clearProps: 'all'
           });
         });
 
-        gsap.utils.toArray('.section-heading, .platform-layout, .hosting-detail, .about-statement > div, .approach-main, .home-next > *, .cta-band > *, .contact-bottom > *').forEach((item) => {
+        gsap.utils.toArray('.section-heading, .platform-layout, .hosting-detail, .about-statement > div, .approach-main, .home-next > *, .cta-band > *, .contact-bottom > *, .service-fit > div, .benefits > h2, .proof > *, .faq > *').forEach((item) => {
           gsap.from(item, {
             y: 30, autoAlpha: 0, duration: 0.75, ease: 'power3.out',
             scrollTrigger: { trigger: item, start: 'clamp(top 86%)', once: true }, clearProps: 'all'
           });
         });
 
-        gsap.utils.toArray('.service-card, .service-detail, .capability-grid article, .value-grid article, .home-next-card').forEach((card) => {
+        gsap.utils.toArray('.service-card, .service-detail, .capability-grid article, .value-grid article, .home-next-card, .benefit-grid article').forEach((card) => {
           const lift = () => gsap.to(card, { y: -5, duration: 0.22, ease: 'power2.out' });
           const settle = () => gsap.to(card, { y: 0, duration: 0.3, ease: 'power2.out' });
           card.addEventListener('pointerenter', lift);
