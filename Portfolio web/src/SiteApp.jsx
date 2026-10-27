@@ -28,16 +28,10 @@ const services = [
 
 const tickerItems = ['WEB EXPERIENCES', 'CONNECTED OPERATIONS', 'HUMAN-CENTRED HR', 'PRACTICAL AI', 'SAAS PRODUCTS', 'BETTER BUSINESS DATA'];
 
-// Marks copy the business still has to supply. Search for <Todo> before publishing.
-function Todo({ children }) { return <div className="todo-note"><b>TO FILL IN</b>{children}</div>; }
-
-// Placeholders shared by several service pages.
-const timelineTodo = <Todo>Typical timeline from first conversation to launch, e.g. “Most projects take X–Y weeks.”</Todo>;
-const proofTodo = <Todo>Add at least one real project: who it was for, the problem, what you built, and a result (customers, revenue or time saved). A screenshot helps. If there’s nothing to show yet, remove this section.</Todo>;
-const costFaq = ['How much does it cost?', <Todo>Give a starting price or explain how you quote, e.g. “Most projects start from …”</Todo>];
-const ownershipFaq = ['Who owns the code and the finished work?', <Todo>State your policy, e.g. “You own everything we build for you, including the code.”</Todo>];
-const limeOSFaq = ['How does this relate to LimeOS?', <>LimeOS is our connected platform that brings ERP, HRM, AI and mobile access together.<Todo>Explain when you recommend LimeOS and when you’d set up or build something else.</Todo></>];
-const migrationFaq = ['Can you bring over our existing data?', <Todo>Say whether you move data across from spreadsheets or old systems, and what’s involved.</Todo>];
+// FAQ answers shared by several service pages.
+const costFaq = ['How much does it cost?', 'It depends on what you need. After a first conversation, we’ll give you a clear quote and explain what’s included, so there are no surprises later.'];
+const limeOSFaq = ['How does this relate to LimeOS?', 'LimeOS is our connected platform that brings ERP, HRM, AI and mobile access together. If it fits the way you work, it can be a quick way to get started. If it doesn’t, we’ll tell you and suggest a better route.'];
+const migrationFaq = ['Can you bring over our existing data?', 'In most cases, yes. We’ll look at where your data lives today, whether that’s spreadsheets or an older system, and agree the best way to bring it across.'];
 
 // One entry per service page at /services/<key>; ServicePage renders the same layout for each.
 const serviceDetails = {
@@ -75,7 +69,6 @@ const serviceDetails = {
     process: {
       kicker: 'HOW IT WORKS', title: 'From first sketch', accent: 'to launch day.',
       body: 'You see the design before we build it, and the site before it goes live, so there are no surprises at the end.',
-      timeline: timelineTodo,
       steps: [
         ['Discover', 'Agree goals, audience and the pages you need.'],
         ['Design', 'Shape the look and content, page by page.'],
@@ -83,12 +76,9 @@ const serviceDetails = {
         ['Launch', 'Go live, then measure and improve.'],
       ],
     },
-    proof: { kicker: 'OUR WORK', title: 'Sites we’ve', accent: 'designed and built.', body: proofTodo },
     faqs: [
       ['Will it work on phones?', 'Yes. Every page is designed and checked for phones, tablets and desktops.'],
-      ['Can I update the content myself?', <Todo>Say whether clients get an easy way to edit text and images, and how.</Todo>],
-      ['Do you handle hosting and domains?', <Todo>Explain whether you set up hosting and domains, and who pays for them.</Todo>],
-      ownershipFaq,
+      ['Can you redesign our existing website?', 'Yes. We can start from what you have, keep what works and rebuild what doesn’t.'],
       costFaq,
     ],
     cta: { title: 'Ready for a better website?', body: 'Tell us about your business and what the site needs to do. We’ll suggest a sensible starting point.' },
@@ -127,7 +117,6 @@ const serviceDetails = {
     process: {
       kicker: 'HOW IT WORKS', title: 'From how you work', accent: 'to a system that fits.',
       body: 'We start by understanding your processes, then roll the system out in stages, so your team isn’t asked to change everything overnight.',
-      timeline: timelineTodo,
       steps: [
         ['Map', 'Walk through how orders, stock and money move today.'],
         ['Shape', 'Agree what the system needs to do, and in what order.'],
@@ -135,12 +124,11 @@ const serviceDetails = {
         ['Launch', 'Get your team comfortable, then keep improving.'],
       ],
     },
-    proof: { kicker: 'OUR WORK', title: 'Operations we’ve', accent: 'helped connect.', body: proofTodo },
     faqs: [
       limeOSFaq,
       ['Can it run on our own servers?', 'Yes. You can choose a managed cloud setup or host it on infrastructure you control.'],
       migrationFaq,
-      ['Will our team need training?', <Todo>Describe the training and support you provide during and after launch.</Todo>],
+      ['Will our team need training?', 'We’ll help with that. We walk your team through the system as it rolls out, so people feel confident using it from day one.'],
       costFaq,
     ],
     cta: { title: 'Ready to connect your operations?', body: 'Tell us how your business runs today. We’ll help you find the right place to start.' },
@@ -179,7 +167,6 @@ const serviceDetails = {
     process: {
       kicker: 'HOW IT WORKS', title: 'From paperwork', accent: 'to smoother HR.',
       body: 'We learn your policies first, then set the system up to follow them, so HR doesn’t have to bend to fit the software.',
-      timeline: timelineTodo,
       steps: [
         ['Understand', 'Learn your policies, approvals and pain points.'],
         ['Configure', 'Set up leave rules, shifts, payroll and roles.'],
@@ -187,10 +174,8 @@ const serviceDetails = {
         ['Improve', 'Refine the setup as your team grows.'],
       ],
     },
-    proof: { kicker: 'OUR WORK', title: 'People teams we’ve', accent: 'helped support.', body: proofTodo },
     faqs: [
       ['Can employees use it on their phones?', 'Yes. Employee self-service works on phones as well as computers, so people can check details and make requests wherever they are.'],
-      ['Does payroll follow local rules?', <Todo>Explain which countries’ payroll, tax and labour rules you support.</Todo>],
       migrationFaq,
       limeOSFaq,
       costFaq,
@@ -231,7 +216,6 @@ const serviceDetails = {
     process: {
       kicker: 'HOW IT WORKS', title: 'Start small.', accent: 'Prove it works.',
       body: 'We begin with one clear use case, try it on real questions and expand once it’s earning its place.',
-      timeline: timelineTodo,
       steps: [
         ['Pick a use case', 'Choose one task where AI can clearly help.'],
         ['Connect knowledge', 'Bring in the documents and data it should use.'],
@@ -239,12 +223,10 @@ const serviceDetails = {
         ['Roll out', 'Launch, watch how it’s used and improve.'],
       ],
     },
-    proof: { kicker: 'OUR WORK', title: 'Assistants we’ve', accent: 'put to work.', body: proofTodo },
     faqs: [
       ['Will the AI make things up?', 'No AI is perfect, so we design for that. Assistants work from your approved information, say when they don’t know, and hand off to a person when they should.'],
-      ['Is our data kept private?', <Todo>Explain how customer data is handled, where it’s stored, and which AI providers can see it.</Todo>],
-      ['Which AI models do you use?', <Todo>Name the models or providers you use, or explain how you choose.</Todo>],
-      ['Does it work in Bangla as well as English?', <Todo>Say which languages your assistants support.</Todo>],
+      ['Will it replace our team?', 'No. It takes on repetitive questions and tasks, so your people can spend more time on work that needs a human.'],
+      ['Where can the assistant live?', 'On your website, inside the tools your team already uses, or in the chat channels your customers prefer.'],
       costFaq,
     ],
     cta: { title: 'Curious where AI could help?', body: 'Tell us about the questions and tasks that eat up your team’s time. We’ll suggest a sensible first use case.' },
@@ -283,7 +265,6 @@ const serviceDetails = {
     process: {
       kicker: 'HOW IT WORKS', title: 'Designed for thumbs,', accent: 'not desks.',
       body: 'We look at how people work on the move, then design screens that are quick to use one-handed and on the go.',
-      timeline: timelineTodo,
       steps: [
         ['Observe', 'See how the work happens in the field today.'],
         ['Design', 'Shape simple screens around the key tasks.'],
@@ -291,12 +272,10 @@ const serviceDetails = {
         ['Roll out', 'Get it on people’s phones and refine from feedback.'],
       ],
     },
-    proof: { kicker: 'OUR WORK', title: 'Tools we’ve put', accent: 'in people’s hands.', body: proofTodo },
     faqs: [
-      ['Do you build for iPhone and Android?', <Todo>Say which platforms you build for, and whether it’s one app for both.</Todo>],
-      ['Will it work without internet?', <Todo>Say whether apps can work offline and sync once they’re back online.</Todo>],
-      ['Will it be on the App Store and Google Play?', <Todo>Explain whether you publish apps to the stores or deliver them another way.</Todo>],
-      ['Can it connect to LimeOS or our existing systems?', <>LimeOS includes a mobile companion app.<Todo>Say which other systems you can connect mobile tools to.</Todo></>],
+      ['Do people need to install anything?', 'Not always. Some tools work best as an app, while others run in the phone’s browser with nothing to install. We’ll recommend what suits your team.'],
+      ['Can it connect to LimeOS or our existing systems?', 'Yes. LimeOS includes a mobile companion app, and we can link mobile tools to the other systems your business relies on.'],
+      ['Will it be hard for staff to learn?', 'We design around a few key tasks with simple screens, so most people can pick it up quickly.'],
       costFaq,
     ],
     cta: { title: 'Got people working on the move?', body: 'Tell us what they need to see and do away from a desk. We’ll help you shape the right tool.' },
@@ -335,7 +314,6 @@ const serviceDetails = {
     process: {
       kicker: 'HOW IT WORKS', title: 'From idea', accent: 'to paying customers.',
       body: 'We start small, launch early and improve with real feedback, so you aren’t paying for features nobody uses.',
-      timeline: <Todo>Typical timeline from first conversation to launch, e.g. “A first version usually takes X–Y weeks.”</Todo>,
       steps: [
         ['Discover', 'Agree who it’s for and what the first version must do.'],
         ['Build', 'Design and develop it, with regular check-ins.'],
@@ -343,23 +321,18 @@ const serviceDetails = {
         ['Improve', 'Use feedback and data to decide what comes next.'],
       ],
     },
-    proof: {
-      kicker: 'OUR WORK', title: 'Products we’ve', accent: 'helped launch.',
-      body: <Todo>Add at least one real project: who it was for, the problem, what you built, and a result (customers, revenue or time saved). A screenshot helps. If there’s nothing to show yet, remove this section.</Todo>,
-    },
     faqs: [
       ['Do I need to be technical?', 'No. We explain choices in plain language and handle the technical side. You bring what you know about your customers and your market.'],
-      ['Who owns the code and the product?', <Todo>State your policy, e.g. “You own everything we build for you, including the code.”</Todo>],
-      ['How much does it cost to build?', <Todo>Give a starting price or explain how you quote, e.g. “Most first versions start from …”</Todo>],
-      ['What does it cost to run once it’s live?', <Todo>Explain who pays for hosting, roughly how much, and whether you offer a monthly support plan.</Todo>],
-      ['Can you take over an existing SaaS product?', <Todo>Say whether you do this, and what you’d need to review first.</Todo>],
+      ['Can we start small?', 'Yes, and we recommend it. A focused first version gets you real feedback sooner and keeps early costs down.'],
+      costFaq,
+      ['What does it cost to run once it’s live?', 'That depends on how many customers you have and what the product does. We’ll explain the running costs, such as hosting and payment fees, before you commit.'],
     ],
     cta: { title: 'Got a product idea?', body: 'Tell us what it does and who it’s for. We’ll help you work out a sensible first version.' },
   },
 };
 
-function ServicePage({ service: { intro, fit, benefits, included, process, proof, faqs, cta } }) {
-  return <><PageIntro kicker={intro.kicker} title={intro.title} accent={intro.accent} body={intro.body}><div className="intro-actions"><a href="/contact" className="button button-lime">{intro.button} <ArrowUpRight size={16}/></a><a href="/services" className="text-link">All services <ArrowRight size={15}/></a></div></PageIntro><section className="service-fit section-pad"><div><Eyebrow dark>{fit.kicker}</Eyebrow><h2>{fit.title}<br/><span>{fit.accent}</span></h2><p>{fit.body}</p></div><ul className="fit-list">{fit.audience.map(item=><li key={item}><span className="check-mark"><Check size={13}/></span>{item}</li>)}</ul></section><section className="benefits section-pad"><Eyebrow>{benefits.kicker}</Eyebrow><h2>{benefits.title}<br/><span>{benefits.accent}</span></h2><div className="benefit-grid">{benefits.items.map(({icon:Icon,title,text},i)=><article key={title}><div className="benefit-top"><span>0{i + 1}</span><Icon size={21}/></div><h3>{title}</h3><p>{text}</p></article>)}</div></section><section className="capabilities section-pad"><Eyebrow dark>{included.kicker}</Eyebrow><div className="capability-grid">{included.items.map(({icon:Icon,title,text})=><article key={title}><Icon/><h3>{title}</h3><p>{text}</p></article>)}</div></section><section className="approach section-pad"><div className="approach-aside"><Eyebrow>{process.kicker}</Eyebrow><div className="approach-index">LT<br/><span>STUDIO / 01</span></div></div><div className="approach-main"><h2>{process.title}<br/><span>{process.accent}</span></h2><div className="approach-bottom"><div className="approach-copy"><p>{process.body}</p>{process.timeline}</div><div className="steps">{process.steps.map(([title,text],i)=><div key={title}><b>0{i + 1}</b><span>{title}<br/><small>{text}</small></span></div>)}</div></div></div></section><section className="proof section-pad"><Eyebrow dark>{proof.kicker}</Eyebrow><h2>{proof.title}<br/><span>{proof.accent}</span></h2>{proof.body}</section><section className="faq section-pad"><div><Eyebrow>QUESTIONS, ANSWERED</Eyebrow><h2>Good questions<br/><span>to ask early.</span></h2></div><div className="faq-list">{faqs.map(([question,answer])=><details key={question}><summary>{question}<ChevronDown size={17}/></summary><div className="faq-answer">{answer}</div></details>)}</div></section><CTA title={cta.title} body={cta.body}/></>;
+function ServicePage({ service: { intro, fit, benefits, included, process, faqs, cta } }) {
+  return <><PageIntro kicker={intro.kicker} title={intro.title} accent={intro.accent} body={intro.body}><div className="intro-actions"><a href="/contact" className="button button-lime">{intro.button} <ArrowUpRight size={16}/></a><a href="/services" className="text-link">All services <ArrowRight size={15}/></a></div></PageIntro><section className="service-fit section-pad"><div><Eyebrow dark>{fit.kicker}</Eyebrow><h2>{fit.title}<br/><span>{fit.accent}</span></h2><p>{fit.body}</p></div><ul className="fit-list">{fit.audience.map(item=><li key={item}><span className="check-mark"><Check size={13}/></span>{item}</li>)}</ul></section><section className="benefits section-pad"><Eyebrow>{benefits.kicker}</Eyebrow><h2>{benefits.title}<br/><span>{benefits.accent}</span></h2><div className="benefit-grid">{benefits.items.map(({icon:Icon,title,text},i)=><article key={title}><div className="benefit-top"><span>0{i + 1}</span><Icon size={21}/></div><h3>{title}</h3><p>{text}</p></article>)}</div></section><section className="capabilities section-pad"><Eyebrow dark>{included.kicker}</Eyebrow><div className="capability-grid">{included.items.map(({icon:Icon,title,text})=><article key={title}><Icon/><h3>{title}</h3><p>{text}</p></article>)}</div></section><section className="approach section-pad"><div className="approach-aside"><Eyebrow>{process.kicker}</Eyebrow><div className="approach-index">LT<br/><span>STUDIO / 01</span></div></div><div className="approach-main"><h2>{process.title}<br/><span>{process.accent}</span></h2><div className="approach-bottom"><div className="approach-copy"><p>{process.body}</p><p>Every project is different, so we agree a realistic timeline with you before work starts.</p></div><div className="steps">{process.steps.map(([title,text],i)=><div key={title}><b>0{i + 1}</b><span>{title}<br/><small>{text}</small></span></div>)}</div></div></div></section><section className="faq section-pad"><div><Eyebrow>QUESTIONS, ANSWERED</Eyebrow><h2>Good questions<br/><span>to ask early.</span></h2></div><div className="faq-list">{faqs.map(([question,answer])=><details key={question}><summary>{question}<ChevronDown size={17}/></summary><div className="faq-answer">{answer}</div></details>)}</div></section><CTA title={cta.title} body={cta.body}/></>;
 }
 
 function Dashboard() {
@@ -527,7 +500,7 @@ export default function SiteApp() {
           });
         });
 
-        gsap.utils.toArray('.section-heading, .platform-layout, .hosting-detail, .about-statement > div, .approach-main, .home-next > *, .cta-band > *, .contact-bottom > *, .service-fit > div, .benefits > h2, .proof > *, .faq > *').forEach((item) => {
+        gsap.utils.toArray('.section-heading, .platform-layout, .hosting-detail, .about-statement > div, .approach-main, .home-next > *, .cta-band > *, .contact-bottom > *, .service-fit > div, .benefits > h2, .faq > *').forEach((item) => {
           gsap.from(item, {
             y: 30, autoAlpha: 0, duration: 0.75, ease: 'power3.out',
             scrollTrigger: { trigger: item, start: 'clamp(top 86%)', once: true }, clearProps: 'all'
