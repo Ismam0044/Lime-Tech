@@ -84,3 +84,5 @@ img,svg,canvas{max-width:100%}
 .platform-points,.limeos-points,.steps>div,.steps small,.service-detail li,.service-detail-links a,.home-next-card>a,.hosting-tabs button,.contact-form label,.contact-email a,.contact-prompt,.contact-bottom>a,.service-foot a,.mobile-nav-bottom>a,.form-note{font-size:12px}
 .contact-form input,.contact-form textarea{font-size:14px}
 @media(max-width:720px){.contact-form input,.contact-form textarea{font-size:16px}}
+/* Social links (footer and contact page) */
+.footer-social a:hover{color:var(--lime)}.contact-social{display:flex;flex-wrap:wrap;gap:8px 24px}
