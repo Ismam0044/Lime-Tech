@@ -1,5 +1,7 @@
 {
+  "trailingSlash": false,
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/(services|limeos|about|contact)", "destination": "/index.html" },
+    { "source": "/services/(websites|erp|hrm|ai-agents|mobile|saas)", "destination": "/index.html" }
   ]
 }

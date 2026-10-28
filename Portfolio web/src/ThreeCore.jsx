@@ -127,7 +127,9 @@ export default function ThreeCore() {
     let elapsed = 0;
     let pointerX = 0;
     let pointerY = 0;
+    let onScreen = true;
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const shouldAnimate = () => onScreen && !motionQuery.matches;
     const animate = () => {
       frame = 0;
       elapsed += 0.01;
@@ -137,32 +139,39 @@ export default function ThreeCore() {
       ring.rotation.z += 0.0018;
       secondRing.rotation.y -= 0.0011;
       renderer.render(scene, camera);
-      if (!motionQuery.matches) frame = window.requestAnimationFrame(animate);
+      if (shouldAnimate()) frame = window.requestAnimationFrame(animate);
     };
     const onPointerMove = (event) => {
       const bounds = host.getBoundingClientRect();
       pointerX = ((event.clientX - bounds.left) / bounds.width - 0.5) * 2;
       pointerY = ((event.clientY - bounds.top) / bounds.height - 0.5) * 2;
     };
-    const onMotionChange = () => {
+    const syncLoop = () => {
       if (frame) window.cancelAnimationFrame(frame);
       frame = 0;
-      if (motionQuery.matches) renderer.render(scene, camera);
-      else if (!frame) frame = window.requestAnimationFrame(animate);
+      if (shouldAnimate()) frame = window.requestAnimationFrame(animate);
+      else renderer.render(scene, camera);
     };
+    // Stop rendering while the orb is scrolled out of view.
+    const visibility = new IntersectionObserver(([entry]) => {
+      onScreen = entry.isIntersecting;
+      syncLoop();
+    });
 
     const observer = new ResizeObserver(resize);
     observer.observe(host);
+    visibility.observe(host);
     host.addEventListener('pointermove', onPointerMove, { passive: true });
-    motionQuery.addEventListener?.('change', onMotionChange);
+    motionQuery.addEventListener?.('change', syncLoop);
     resize();
-    if (!motionQuery.matches) frame = window.requestAnimationFrame(animate);
+    syncLoop();
 
     return () => {
       if (frame) window.cancelAnimationFrame(frame);
       observer.disconnect();
+      visibility.disconnect();
       host.removeEventListener('pointermove', onPointerMove);
-      motionQuery.removeEventListener?.('change', onMotionChange);
+      motionQuery.removeEventListener?.('change', syncLoop);
       orbGeometry.dispose();
       coreMaterial.dispose();
       wire.geometry.dispose();
