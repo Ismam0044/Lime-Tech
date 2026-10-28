@@ -85,4 +85,5 @@ img,svg,canvas{max-width:100%}
 .contact-form input,.contact-form textarea{font-size:14px}
 @media(max-width:720px){.contact-form input,.contact-form textarea{font-size:16px}}
 /* Social links (footer and contact page) */
-.footer-social a:hover{color:var(--lime)}.contact-social{display:flex;flex-wrap:wrap;gap:8px 24px}
+.footer>.footer-social,.contact-social{display:flex;gap:10px}.footer-social a,.contact-social a{display:grid;place-items:center;transition:color .2s,border-color .2s,background .2s}.footer-social a{width:30px;height:30px;border:1px solid #394640;color:#bbc6b8}.footer-social a:hover{color:var(--lime);border-color:var(--lime)}.contact-email .contact-social a{width:40px;height:40px;border:1px solid #b5e44a55;color:var(--lime)}.contact-email .contact-social a:hover{background:var(--lime);border-color:var(--lime);color:var(--dark)}
+@media(max-width:720px){.footer>.footer-social{margin-left:auto}.footer-social+.back-top{margin-left:0}}
