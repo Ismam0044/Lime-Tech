@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://limetech.site/sitemap.xml
+Sitemap: https://www.limetech.site/sitemap.xml
