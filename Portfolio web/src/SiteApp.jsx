@@ -350,9 +350,8 @@ function Dashboard() {
   return <div className="dash-wrap" aria-label="Illustration of a LimeOS analytics dashboard"><div className="orbit orbit-one"/><div className="orbit orbit-two"/><div className="dash-card"><div className="dash-top"><div className="dash-brand"><span className="mini-mark">✳</span> LimeOS <span className="dash-label">OVERVIEW</span></div><span className="avatar">LT</span></div><div className="dash-title">Good morning, team <span>✦</span></div><div className="dash-sub">A live view across your business.</div><div className="metric-row"><div className="metric"><small>REVENUE · THIS MONTH</small><strong>$84,260</strong><em>↗ 12.8%</em></div><div className="metric"><small>ORDERS FULFILLED</small><strong>1,284</strong><em>↗ 8.2%</em></div></div><div className="chart-head"><b>Revenue overview</b><span>Last 7 months⌄</span></div><div className="chart"><div className="chart-grid"><i/><i/><i/><i/></div><svg viewBox="0 0 480 110" preserveAspectRatio="none"><defs><linearGradient id="fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor="#b5e44a" stopOpacity=".28"/><stop offset="1" stopColor="#b5e44a" stopOpacity="0"/></linearGradient></defs><path d="M0 87 C25 82 36 74 58 79 S93 60 119 68 S156 53 177 60 S212 38 239 48 S273 35 296 42 S337 22 358 33 S399 18 420 25 S455 10 480 13 V110 H0Z" fill="url(#fill)"/><path d="M0 87 C25 82 36 74 58 79 S93 60 119 68 S156 53 177 60 S212 38 239 48 S273 35 296 42 S337 22 358 33 S399 18 420 25 S455 10 480 13" fill="none" stroke="#b5e44a" strokeWidth="3"/></svg><div className="months"><span>JAN</span><span>FEB</span><span>MAR</span><span>APR</span><span>MAY</span><span>JUN</span><span>JUL</span></div></div><div className="dash-foot"><span><i className="live-dot"/> All systems in sync</span><span>Updated just now</span></div></div><div className="float-note note-ai"><span className="note-icon"><Sparkles size={15}/></span><div><small>AI INSIGHT</small><b>Stock is trending up</b></div><span className="note-up">↗</span></div><div className="float-note note-mobile"><div className="phone-icon"><MonitorSmartphone size={17}/></div><div><small>YOUR BUSINESS</small><b>In your pocket.</b></div></div><div className="spark spark-a">✳</div><div className="spark spark-b">✳</div></div>;
 }
 
-function Header() {
+function Header({ path }) {
   const [open, setOpen] = useState(false);
-  const path = window.location.pathname.replace(/\/$/, '') || '/';
   const isCurrent = (href) => path === href || (href !== '/' && path.startsWith(href + '/'));
   return <header className="nav-shell"><a href="/" className="brand"><picture><source srcSet="/lime-logo.avif" type="image/avif"/><source srcSet="/lime-logo.webp" type="image/webp"/><img src="/lime-logo.png" alt="Lime Tech"/></picture><span className="brand-tag">DIGITAL, GROWN WELL.</span></a><nav className="nav-links" aria-label="Main navigation">{navItems.map(item => <a key={item.href} href={item.href} className={isCurrent(item.href) ? 'nav-current' : ''} aria-current={isCurrent(item.href) ? 'page' : undefined}>{item.label}</a>)}<a className="nav-cta" href="/contact">Let’s talk <ArrowUpRight size={15}/></a></nav><Dialog open={open} onOpenChange={setOpen}><DialogTrigger asChild><button className="mobile-toggle" aria-label={open ? 'Close navigation' : 'Open navigation'}>{open ? <X/> : <Menu/>}</button></DialogTrigger><DialogContent className="mobile-nav-panel"><DialogTitle className="sr-only">Lime Tech navigation</DialogTitle><DialogDescription className="sr-only">Choose a page to explore.</DialogDescription><div className="mobile-nav-top"><span>LT / EXPLORE</span><DialogClose asChild><button className="mobile-nav-close" aria-label="Close navigation"><X size={18}/></button></DialogClose></div><nav className="mobile-nav-links" aria-label="Mobile navigation">{[...navItems, { label: 'Contact', href: '/contact' }].map((item, index) => <DialogClose asChild key={item.href}><a href={item.href} className={isCurrent(item.href) ? 'mobile-nav-link nav-current' : 'mobile-nav-link'} aria-current={isCurrent(item.href) ? 'page' : undefined}><span><small>0{index + 1}</small>{item.label}</span><ArrowUpRight size={18}/></a></DialogClose>)}</nav><div className="mobile-nav-bottom"><span>BUILT WITH PURPOSE IN BANGLADESH</span><a href={'mailto:' + CONTACT_EMAIL}>LET’S TALK <ArrowUpRight size={15}/></a></div></DialogContent></Dialog></header>;
 }
@@ -474,21 +473,35 @@ function setHeadTag(tag, keyAttr, key, valueAttr, value) {
   el.setAttribute(valueAttr, value);
 }
 
-export default function SiteApp() {
+const notFoundRoute = { title: 'Page not found', notFound: true, description: defaultDescription, component: () => <PageIntro kicker="404 / NOT FOUND" title="This page" accent="took a detour." body="Let’s get you back to where you need to be."><a className="button button-lime" href="/">Back to home <ArrowRight size={16}/></a></PageIntro> };
+const resolveRoute = (path) => routes[path] || notFoundRoute;
+
+// Every page the build pre-renders to static HTML (see prerender.js).
+export const routePaths = Object.keys(routes);
+
+// The <head> values for a page, shared by the pre-render step and the browser.
+export function pageHead(path) {
+  const route = resolveRoute(path);
+  return {
+    title: route.title === 'Home' ? 'Lime Tech — Build what’s next' : route.title + ' — Lime Tech',
+    description: route.description,
+    url: route.notFound ? null : SITE_URL + path,
+    robots: route.notFound ? 'noindex' : null,
+  };
+}
+
+export default function SiteApp({ path }) {
   const pageRef = useRef(null);
-  const path = window.location.pathname.replace(/\/$/, '') || '/';
-  const route = routes[path] || { title: 'Page not found', notFound: true, description: defaultDescription, component: () => <PageIntro kicker="404 / NOT FOUND" title="This page" accent="took a detour." body="Let’s get you back to where you need to be."><a className="button button-lime" href="/">Back to home <ArrowRight size={16}/></a></PageIntro> };
-  const Page = route.component;
+  const Page = resolveRoute(path).component;
   useEffect(() => {
-    const title = route.title === 'Home' ? 'Lime Tech — Build what’s next' : route.title + ' — Lime Tech';
-    const url = SITE_URL + (path === '/' ? '/' : path);
-    document.title = title;
-    setHeadTag('meta', 'name', 'description', 'content', route.description);
-    setHeadTag('meta', 'property', 'og:title', 'content', title);
-    setHeadTag('meta', 'property', 'og:description', 'content', route.description);
-    setHeadTag('meta', 'property', 'og:url', 'content', route.notFound ? null : url);
-    setHeadTag('link', 'rel', 'canonical', 'href', route.notFound ? null : url);
-    setHeadTag('meta', 'name', 'robots', 'content', route.notFound ? 'noindex' : null);
+    const head = pageHead(path);
+    document.title = head.title;
+    setHeadTag('meta', 'name', 'description', 'content', head.description);
+    setHeadTag('meta', 'property', 'og:title', 'content', head.title);
+    setHeadTag('meta', 'property', 'og:description', 'content', head.description);
+    setHeadTag('meta', 'property', 'og:url', 'content', head.url);
+    setHeadTag('link', 'rel', 'canonical', 'href', head.url);
+    setHeadTag('meta', 'name', 'robots', 'content', head.robots);
   }, [path]);
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
@@ -509,7 +522,8 @@ export default function SiteApp() {
       const scope = pageRef.current;
       const ctx = gsap.context(() => {
         const cleanups = [];
-        gsap.from('.nav-shell', { y: -14, autoAlpha: 0, duration: 0.65, ease: 'power3.out' });
+        // The header sits outside <main>, so pass the element: selector strings here only search inside pageRef.
+        gsap.from(document.querySelector('.nav-shell'), { y: -14, autoAlpha: 0, duration: 0.65, ease: 'power3.out' });
         if (document.querySelector('.hero')) {
           const intro = gsap.timeline({ defaults: { ease: 'power3.out' } });
           intro
@@ -575,7 +589,9 @@ export default function SiteApp() {
       }, pageRef);
       return () => ctx.revert();
     });
+    // The pre-rendered page stays hidden (see index.html) until the intro animations have set their start states.
+    document.documentElement.classList.remove('js-intro');
     return () => media.revert();
   }, [path]);
-  return <><Header/><main ref={pageRef}><Page/></main><Footer/></>;
+  return <><Header path={path}/><main ref={pageRef}><Page/></main><Footer/></>;
 }

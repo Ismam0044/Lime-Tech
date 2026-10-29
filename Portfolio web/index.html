@@ -15,6 +15,10 @@
     <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title>Lime Tech — Build what’s next</title>
+    <!-- Hide the pre-rendered page until the intro animations are ready, so it doesn't flash before animating in.
+         SiteApp removes the class; the timeout keeps the page readable if the app fails to start. -->
+    <style>html.js-intro body{visibility:hidden}</style>
+    <script>document.documentElement.classList.add('js-intro');setTimeout(function(){document.documentElement.classList.remove('js-intro')},3000)</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">

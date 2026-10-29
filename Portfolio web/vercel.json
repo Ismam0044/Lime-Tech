@@ -1,7 +1,4 @@
 {
-  "trailingSlash": false,
-  "rewrites": [
-    { "source": "/(services|limeos|about|contact)", "destination": "/index.html" },
-    { "source": "/services/(websites|erp|hrm|ai-agents|mobile|saas)", "destination": "/index.html" }
-  ]
+  "cleanUrls": true,
+  "trailingSlash": false
 }
